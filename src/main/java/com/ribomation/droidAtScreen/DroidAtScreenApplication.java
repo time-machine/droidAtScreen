@@ -1,5 +1,6 @@
 package com.ribomation.droidAtScreen;
 
+import com.ribomation.droidAtScreen.cmd.*;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class DroidAtScreenApplication implements Application {
     DroidAtScreenApplication app = new DroidAtScreenApplication();
     app.parseArgs(args);
     app.initProperties();
+    app.initCommands();
   }
 
   private void parseArgs(String[] args) {
@@ -49,6 +51,11 @@ public class DroidAtScreenApplication implements Application {
     catch (BackingStoreException e) {
       log.warn("Failed to list prefs", e);
     }
+  }
+
+  private void initCommands() {
+    log.debug("initCommands");
+    Command.setApplication(this);
   }
 
   // --------------------------------------------
