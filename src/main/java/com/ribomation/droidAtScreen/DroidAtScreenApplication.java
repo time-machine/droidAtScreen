@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen;
 
 import com.ribomation.droidAtScreen.cmd.*;
+import com.ribomation.droidAtScreen.gui.ApplicationFrame;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -11,8 +12,11 @@ import java.util.prefs.Preferences;
 
 public class DroidAtScreenApplication implements Application {
   private Logger log = Logger.getLogger(DroidAtScreenApplication.class);
+  private ApplicationFrame appFrame;
   private Preferences appPreferences;
-  private final String appPropertiesPath = "/META-INF/maven/com.ribomation/droidAtScreen/pom.properties";
+  private final String appPropertiesPath = "/META-INF/maven/com.ribomation/" +
+      "droidAtScreen/pom.properties";
+  private String appName = "Droid@Screen";
   private String appVersion = "0.1";
 
   public static void main(String[] args) {
@@ -20,6 +24,7 @@ public class DroidAtScreenApplication implements Application {
     app.parseArgs(args);
     app.initProperties();
     app.initCommands();
+    app.initGUI();
   }
 
   private void parseArgs(String[] args) {
@@ -58,9 +63,25 @@ public class DroidAtScreenApplication implements Application {
     Command.setApplication(this);
   }
 
+  private void initGUI() {
+    log.debug("initGUI");
+    appFrame = new ApplicationFrame(this);
+    appFrame.initGUI();
+  }
+
   // --------------------------------------------
   // Application
   // --------------------------------------------
+  @Override
+  public String getName() {
+    return appName;
+  }
+
+  @Override
+  public String getVersion() {
+    return appVersion;
+  }
+
   @Override
   public Preferences getPreferences() {
     if (appPreferences == null) {
