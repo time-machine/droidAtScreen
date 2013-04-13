@@ -9,5 +9,7 @@ import java.util.prefs.Preferences;
  * the app.
  */
 public interface Application {
+  String getName();
+  String getVersion();
   Preferences getPreferences();
 }
