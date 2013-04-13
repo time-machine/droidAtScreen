@@ -28,6 +28,11 @@ public class DroidAtScreenApplication implements Application {
     app.initCommands();
     app.initGUI();
     app.initAndroid();
+    app.finish(); // for debug purpose
+  }
+
+  private void finish() {
+    log.debug("finish");
   }
 
   private void parseArgs(String[] args) {
