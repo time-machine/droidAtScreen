@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen;
 
 import com.ribomation.droidAtScreen.cmd.*;
+import com.ribomation.droidAtScreen.dev.AndroidDeviceManager;
 import com.ribomation.droidAtScreen.gui.ApplicationFrame;
 import org.apache.log4j.Logger;
 
@@ -12,6 +13,7 @@ import java.util.prefs.Preferences;
 
 public class DroidAtScreenApplication implements Application {
   private Logger log = Logger.getLogger(DroidAtScreenApplication.class);
+  private AndroidDeviceManager deviceManager;
   private ApplicationFrame appFrame;
   private Preferences appPreferences;
   private final String appPropertiesPath = "/META-INF/maven/com.ribomation/" +
@@ -25,6 +27,7 @@ public class DroidAtScreenApplication implements Application {
     app.initProperties();
     app.initCommands();
     app.initGUI();
+    app.initAndroid();
   }
 
   private void parseArgs(String[] args) {
@@ -67,6 +70,12 @@ public class DroidAtScreenApplication implements Application {
     log.debug("initGUI");
     appFrame = new ApplicationFrame(this);
     appFrame.initGUI();
+  }
+
+  private void initAndroid() {
+    log.debug("initAndroid");
+    deviceManager = new AndroidDeviceManager();
+    //
   }
 
   // --------------------------------------------
