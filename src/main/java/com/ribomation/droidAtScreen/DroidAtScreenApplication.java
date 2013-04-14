@@ -30,6 +30,7 @@ public class DroidAtScreenApplication implements Application,
     app.initCommands();
     app.initGUI();
     app.initAndroid();
+    app.run();
     app.finish(); // for debug purpose
   }
 
@@ -85,6 +86,11 @@ public class DroidAtScreenApplication implements Application,
     deviceManager.addAndroidDeviceListener(this);
   }
 
+  private void run() {
+    log.debug("run");
+    //
+  }
+
   // --------------------------------------------
   // Application
   // --------------------------------------------
@@ -96,6 +102,11 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public String getVersion() {
     return appVersion;
+  }
+
+  @Override
+  public ApplicationFrame getAppFrame() {
+    return appFrame;
   }
 
   @Override
