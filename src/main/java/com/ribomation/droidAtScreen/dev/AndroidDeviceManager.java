@@ -4,6 +4,8 @@ import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import org.apache.log4j.Logger;
 
+import java.util.*;
+
 /**
  * A facade to AndroidDebugBridge.
  */
@@ -11,6 +13,8 @@ public class AndroidDeviceManager extends Thread implements
     AndroidDebugBridge.IDebugBridgeChangeListener,
     AndroidDebugBridge.IDeviceChangeListener {
   private Logger log = Logger.getLogger(this.getClass());
+  private List<AndroidDeviceListener> listeners =
+      new ArrayList<AndroidDeviceListener>();
 
   public AndroidDeviceManager() {
     AndroidDebugBridge.init(false);
@@ -18,6 +22,10 @@ public class AndroidDeviceManager extends Thread implements
 
     AndroidDebugBridge.addDebugBridgeChangeListener(this);
     AndroidDebugBridge.addDeviceChangeListener(this);
+  }
+
+  public void addAndroidDeviceListener(AndroidDeviceListener l) {
+    listeners.add(l);
   }
 
   @Override
