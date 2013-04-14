@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen;
 
 //import com.ribomation.droidAtScreen.dev.AndroidDevice;
+import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
 
 import java.util.prefs.Preferences;
 
@@ -11,5 +12,6 @@ import java.util.prefs.Preferences;
 public interface Application {
   String getName();
   String getVersion();
+  void addAndroidDeviceListener(AndroidDeviceListener listener);
   Preferences getPreferences();
 }
