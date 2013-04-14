@@ -18,8 +18,6 @@ public class DroidAtScreenApplication implements Application,
   private AndroidDeviceManager deviceManager;
   private ApplicationFrame appFrame;
   private Preferences appPreferences;
-  private List<AndroidDeviceListener> deviceListeners =
-      new ArrayList<AndroidDeviceListener>();
   private final String appPropertiesPath = "/META-INF/maven/com.ribomation/" +
       "droidAtScreen/pom.properties";
   private String appName = "Droid@Screen";
@@ -85,14 +83,6 @@ public class DroidAtScreenApplication implements Application,
     log.debug("initAndroid");
     deviceManager = new AndroidDeviceManager();
     deviceManager.addAndroidDeviceListener(this);
-  }
-
-  // --------------------------------------------
-  // AndroidDeviceListener
-  // --------------------------------------------
-  @Override
-  public void addAndroidDeviceListener(AndroidDeviceListener listener) {
-    deviceListeners.add(listener);
   }
 
   // --------------------------------------------
