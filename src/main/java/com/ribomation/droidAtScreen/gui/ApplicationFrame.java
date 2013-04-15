@@ -58,6 +58,7 @@ public class ApplicationFrame extends JFrame {
     JMenuBar mb = new JMenuBar();
     mb.add(createFileMenu());
     mb.add(createViewMenu());
+    mb.add(createOptionsMenu());
     //
     return mb;
   }
@@ -68,6 +69,12 @@ public class ApplicationFrame extends JFrame {
 
   protected JMenu createViewMenu() {
     return createMenu("View", 'V', "Portrait", "Scale");
+  }
+
+  protected JMenu createOptionsMenu() {
+    return createMenu("Options", 'O', "AdbExePath", "-", "AutoShow",
+        "SkipEmulator", "FrameRate", "-", "LookAndFeel", "-",
+        "RemoveProperties");
   }
 
   public JMenu createMenu(String name, char mnemonicChar,
