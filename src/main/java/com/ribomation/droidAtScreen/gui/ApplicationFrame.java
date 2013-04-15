@@ -57,13 +57,17 @@ public class ApplicationFrame extends JFrame {
   protected JMenuBar createMenubar() {
     JMenuBar mb = new JMenuBar();
     mb.add(createFileMenu());
-    // mb.add(createViewMenu());
+    mb.add(createViewMenu());
     //
     return mb;
   }
 
   protected JMenu createFileMenu() {
     return createMenu("File", 'F', "ScreenShot", "-", "Quit");
+  }
+
+  protected JMenu createViewMenu() {
+    return createMenu("View", 'V', "Portrait", "Scale");
   }
 
   public JMenu createMenu(String name, char mnemonicChar,
