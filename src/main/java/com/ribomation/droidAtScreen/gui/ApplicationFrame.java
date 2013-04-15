@@ -3,16 +3,18 @@ package com.ribomation.droidAtScreen.gui;
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.cmd.Command;
 import com.ribomation.droidAtScreen.cmd.QuitCommand;
+import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import java.awt.*; // HeadlessException
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class ApplicationFrame extends JFrame {
   private Logger log = Logger.getLogger(ApplicationFrame.class);
   private Application application;
+  private DefaultComboBoxModel deviceListModel = new DefaultComboBoxModel();
 
   public ApplicationFrame(Application application) throws HeadlessException {
     this.application = application;
@@ -48,7 +50,12 @@ public class ApplicationFrame extends JFrame {
   }
 
   private JPanel createDevicesList() {
-    //
+    JComboBox devices = new JComboBox(deviceListModel);
+    devices.setPreferredSize(new Dimension(200, 20));
+
+    getApplication().addAndroidDeviceListener(new AndroidDeviceListener() {
+
+    });
     JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
     //
     return p;
@@ -59,7 +66,7 @@ public class ApplicationFrame extends JFrame {
     mb.add(createFileMenu());
     mb.add(createViewMenu());
     mb.add(createOptionsMenu());
-    //
+    mb.add(createHelpMenu());
     return mb;
   }
 
@@ -75,6 +82,10 @@ public class ApplicationFrame extends JFrame {
     return createMenu("Options", 'O', "AdbExePath", "-", "AutoShow",
         "SkipEmulator", "FrameRate", "-", "LookAndFeel", "-",
         "RemoveProperties");
+  }
+
+  protected JMenu createHelpMenu() {
+    return createMenu("Help", 'H', "About");
   }
 
   public JMenu createMenu(String name, char mnemonicChar,
