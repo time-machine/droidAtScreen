@@ -3,6 +3,7 @@ package com.ribomation.droidAtScreen.gui;
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.cmd.Command;
 import com.ribomation.droidAtScreen.cmd.QuitCommand;
+import com.ribomation.droidAtScreen.dev.AndroidDevice;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
 import org.apache.log4j.Logger;
 
@@ -54,8 +55,17 @@ public class ApplicationFrame extends JFrame {
     devices.setPreferredSize(new Dimension(200, 20));
 
     getApplication().addAndroidDeviceListener(new AndroidDeviceListener() {
+      @Override
+      public void connected(AndroidDevice dev) {
+        //
+      }
 
+      @Override
+      public void disconnected(AndroidDevice dev) {
+        //
+      }
     });
+
     JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
     //
     return p;
