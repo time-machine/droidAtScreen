@@ -77,18 +77,21 @@ public class ApplicationFrame extends JFrame {
       @Override
       public void connected(AndroidDevice dev) {
         log.debug("[devicesBox] connected: dev = " + dev);
-        //
+        deviceListModel.addElement(dev.getName());
+        deviceListModel.setSelectedItem(dev.getName());
       }
 
       @Override
       public void disconnected(AndroidDevice dev) {
         log.debug("[devicesBox] disconnected: dev = " + dev);
-        //
+        deviceListModel.removeElement(dev.getName());
       }
     });
 
     JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    //
+    p.setBorder(BorderFactory.createTitledBorder("Devices"));
+    p.add(devices);
+    p.add(Command.get("Show").createButton());
     return p;
   }
 
