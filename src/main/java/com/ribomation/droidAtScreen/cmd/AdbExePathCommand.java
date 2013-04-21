@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class AdbExePathCommand extends Command {
   public AdbExePathCommand() {
@@ -59,13 +60,24 @@ public class AdbExePathCommand extends Command {
   }
 
   private void createFileDialog(JTextField path) {
-    // File f = null;
-    // if (!isNotDefined()) {
-    //   f = new File(getPreferenceValue());
-    // }
-    // JFileChooser chooser = new JFileChooser(f != null ? f.getParentFile() :
-    //     null);
-    //
+    File f = null;
+    if (!isNotDefined()) {
+      f = new File(getPreferenceValue());
+    }
+    JFileChooser chooser = new JFileChooser(f != null ? f.getParentFile() :
+        null);
+    int rc = chooser.showOpenDialog(getApplication().getAppFrame());
+    if (rc == JFileChooser.APPROVE_OPTION) {
+      final File file = chooser.getSelectedFile();
+      if (file.canRead() && file.canExecute()) {
+
+      }
+      else {
+        JOptionPane.showMessageDialog(getApplication().getAppFrame(),
+           "Cannot read/execute the file: " + file.getAbsolutePath(),
+           "Not an executable", JOptionPane.ERROR_MESSAGE);
+      }
+    }
   }
 
   protected String getPreferencesKey() {
