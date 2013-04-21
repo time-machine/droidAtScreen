@@ -17,6 +17,10 @@ public class ApplicationFrame extends JFrame {
   private Application application;
   private DefaultComboBoxModel deviceListModel = new DefaultComboBoxModel();
 
+  // public ApplicationFrame() throws HeadlessException {
+  //   super("Droid@Screen, version 0.1");
+  // }
+
   public ApplicationFrame(Application application) throws HeadlessException {
     this.application = application;
   }
@@ -28,6 +32,10 @@ public class ApplicationFrame extends JFrame {
     }
     return application;
   }
+
+  // public void setApplication(Application application) {
+  //   this.application = application;
+  // }
 
   public void initGUI() {
     setTitle(getApplication().getName() + ", Version " +
@@ -44,6 +52,17 @@ public class ApplicationFrame extends JFrame {
     pack();
   }
 
+  public void placeinUpperLeftScreen() {
+    placeinUpperLeftScreen(this);
+  }
+
+  public static void placeinUpperLeftScreen(Window win) {
+    Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+    Dimension frame = win.getSize();
+    win.setLocation(screen.width / 4 - frame.width / 2,
+        screen.height / 4 - frame.height / 2);
+  }
+
   private JPanel createDeviceControlPane() {
     JPanel p = new JPanel(new GridLayout(1, 1, 0, 5));
     p.add(createDevicesList());
@@ -57,11 +76,13 @@ public class ApplicationFrame extends JFrame {
     getApplication().addAndroidDeviceListener(new AndroidDeviceListener() {
       @Override
       public void connected(AndroidDevice dev) {
+        log.debug("[devicesBox] connected: dev = " + dev);
         //
       }
 
       @Override
       public void disconnected(AndroidDevice dev) {
+        log.debug("[devicesBox] disconnected: dev = " + dev);
         //
       }
     });
