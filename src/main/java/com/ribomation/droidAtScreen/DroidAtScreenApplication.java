@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen;
 
 import com.ribomation.droidAtScreen.cmd.*;
+import com.ribomation.droidAtScreen.dev.AndroidDevice;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceManager;
 import com.ribomation.droidAtScreen.gui.ApplicationFrame;
@@ -90,6 +91,22 @@ public class DroidAtScreenApplication implements Application,
 
   private void run() {
     log.debug("run");
+    getAppFrame().placeinUpperLeftScreen();
+    getAppFrame().setVisible(true);
+  }
+
+  // --------------------------------------------
+  // AndroidDeviceManager
+  // --------------------------------------------
+  @Override
+  public void connected(final AndroidDevice dev) {
+    log.debug("connected: dev = " + dev);
+    //
+  }
+
+  @Override
+  public void disconnected(final AndroidDevice dev) {
+    log.debug("disconnected: dev = " + dev);
     //
   }
 
