@@ -93,6 +93,16 @@ public abstract class Command extends AbstractAction {
     return mi;
   }
 
+  public AbstractButton createButton() {
+    AbstractButton b = newButton();
+    b.setAction(this);
+    return b;
+  }
+
+  protected AbstractButton newButton() {
+    return new JButton();
+  }
+
   protected Application getApplication() {
     if (application == null) {
       throw new IllegalStateException("Missing application ref. Must invoke " +
