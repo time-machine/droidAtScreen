@@ -103,6 +103,12 @@ public abstract class Command extends AbstractAction {
     return new JButton();
   }
 
+  public JPanel createPane() {
+    JPanel p = new JPanel();
+    p.add(new JLabel("Empty/Dummy Pane"));
+    return p;
+  }
+
   protected Application getApplication() {
     if (application == null) {
       throw new IllegalStateException("Missing application ref. Must invoke " +
