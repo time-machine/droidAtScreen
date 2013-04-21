@@ -34,11 +34,6 @@ public class DroidAtScreenApplication implements Application,
     app.initGUI();
     app.initAndroid();
     app.run();
-    app.finish(); // for debug purpose
-  }
-
-  private void finish() {
-    log.debug("finish");
   }
 
   private void parseArgs(String[] args) {
