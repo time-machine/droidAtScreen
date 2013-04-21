@@ -34,6 +34,7 @@ public class DroidAtScreenApplication implements Application,
     app.initGUI();
     app.initAndroid();
     app.run();
+    app.postStart();
   }
 
   private void parseArgs(String[] args) {
@@ -88,6 +89,17 @@ public class DroidAtScreenApplication implements Application,
     log.debug("run");
     getAppFrame().placeinUpperLeftScreen();
     getAppFrame().setVisible(true);
+  }
+
+  private void postStart() {
+    log.debug("postStart");
+    AdbExePathCommand adbPath = Command.find(AdbExePathCommand.class);
+    if (adbPath.isNotDefined()) {
+      adbPath.execute();
+    }
+    else {
+    //   setAdbExecutablePath(adbPath.getFile());
+    }
   }
 
   // --------------------------------------------
