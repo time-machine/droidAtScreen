@@ -70,7 +70,14 @@ public class AdbExePathCommand extends Command {
     if (rc == JFileChooser.APPROVE_OPTION) {
       final File file = chooser.getSelectedFile();
       if (file.canRead() && file.canExecute()) {
-
+        path.setText(file.getAbsolutePath());
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            setPreferenceValue(file.getAbsolutePath());
+            getApplication().setAdbExecutablePath(file);
+          }
+        });
       }
       else {
         JOptionPane.showMessageDialog(getApplication().getAppFrame(),
@@ -84,12 +91,22 @@ public class AdbExePathCommand extends Command {
     return "adb-executable-path";
   }
 
+  protected void setPreferenceValue(String value) {
+    getApplication().getPreferences().put(getPreferencesKey(), value);
+    getApplication().savePreferences();
+  }
+
   protected String getPreferenceValue() {
     return getApplication().getPreferences().get(getPreferencesKey(), "");
   }
 
   public boolean isNotDefined() {
     return isEmpty(getPreferenceValue());
+  }
+
+  public File getFile() {
+    if (isNotDefined()) return null;
+    return new File(getPreferenceValue());
   }
 
   private boolean isEmpty(String s) {
