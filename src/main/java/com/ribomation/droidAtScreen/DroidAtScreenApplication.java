@@ -7,6 +7,7 @@ import com.ribomation.droidAtScreen.dev.AndroidDeviceManager;
 import com.ribomation.droidAtScreen.gui.ApplicationFrame;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -98,7 +99,7 @@ public class DroidAtScreenApplication implements Application,
       adbPath.execute();
     }
     else {
-    //   setAdbExecutablePath(adbPath.getFile());
+      setAdbExecutablePath(adbPath.getFile());
     }
   }
 
@@ -149,5 +150,21 @@ public class DroidAtScreenApplication implements Application,
       appPreferences = Preferences.userNodeForPackage(this.getClass());
     }
     return appPreferences;
+  }
+
+  @Override
+  public void savePreferences() {
+    try {
+      getPreferences().flush();
+    }
+    catch (BackingStoreException e) {
+      log.info("Failed to flush app preferences", e);
+    }
+  }
+
+  @Override
+  public void setAdbExecutablePath(File value) {
+    log.debug("setAdbExecutablePath: " + value);
+    deviceManager.setAdbExecutable(value);
   }
 }
