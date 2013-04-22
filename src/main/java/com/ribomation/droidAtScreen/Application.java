@@ -3,6 +3,7 @@ package com.ribomation.droidAtScreen;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
 
 import javax.swing.*;
+import java.io.File;
 import java.util.prefs.Preferences;
 
 /**
@@ -15,4 +16,6 @@ public interface Application {
   String getVersion();
   void addAndroidDeviceListener(AndroidDeviceListener listener);
   Preferences getPreferences();
+  void setAdbExecutablePath(File file);
+  void savePreferences();
 }
