@@ -48,7 +48,7 @@ public abstract class Command extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    //
+    execute();
   }
 
   public static <CmdType extends Command> CmdType find(
