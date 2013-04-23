@@ -43,11 +43,13 @@ public class AndroidDeviceManager extends Thread implements
 
   @Override
   public void deviceDisconnected(IDevice target) {
+    log.info("Device disconnected: " + target);
     //
   }
 
   @Override
   public void deviceConnected(IDevice target) {
+    log.info("Device connected: " + target);
     //
   }
 
