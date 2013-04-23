@@ -50,7 +50,7 @@ public class AndroidDeviceManager extends Thread implements
   @Override
   public void deviceConnected(IDevice target) {
     log.info("Device connected: " + target);
-    //
+    // TODO: -
   }
 
   protected String toMaskString(int mask) {
