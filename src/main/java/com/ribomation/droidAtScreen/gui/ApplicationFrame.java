@@ -17,10 +17,6 @@ public class ApplicationFrame extends JFrame {
   private Application application;
   private DefaultComboBoxModel deviceListModel = new DefaultComboBoxModel();
 
-  // public ApplicationFrame() throws HeadlessException {
-  //   super("Droid@Screen, version 0.1");
-  // }
-
   public ApplicationFrame(Application application) throws HeadlessException {
     this.application = application;
   }
@@ -32,10 +28,6 @@ public class ApplicationFrame extends JFrame {
     }
     return application;
   }
-
-  // public void setApplication(Application application) {
-  //   this.application = application;
-  // }
 
   public void initGUI() {
     setTitle(getApplication().getName() + ", Version " +
