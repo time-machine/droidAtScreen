@@ -17,6 +17,8 @@ public class AndroidDeviceManager extends Thread implements
   private Logger log = Logger.getLogger(this.getClass());
   private List<AndroidDeviceListener> listeners =
       new ArrayList<AndroidDeviceListener>();
+  private Map<String, AndroidDevice> devices =
+      new HashMap<String, AndroidDevice>();
 
   public AndroidDeviceManager() {
     AndroidDebugBridge.init(false);
@@ -50,6 +52,8 @@ public class AndroidDeviceManager extends Thread implements
   @Override
   public void deviceConnected(IDevice target) {
     log.info("Device connected: " + target);
+    AndroidDevice dev = new AndroidDeviceImpl(target);
+    devices.put(dev.getName(), dev);
     // TODO: -
   }
 
