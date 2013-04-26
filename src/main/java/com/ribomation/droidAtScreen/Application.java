@@ -16,6 +16,7 @@ public interface Application {
   String getVersion();
   void addAndroidDeviceListener(AndroidDeviceListener listener);
   Preferences getPreferences();
+  void setSkipEmulator(boolean skip);
   void setAdbExecutablePath(File file);
   void savePreferences();
 }
