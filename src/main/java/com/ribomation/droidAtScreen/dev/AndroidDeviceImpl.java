@@ -17,4 +17,11 @@ public class AndroidDeviceImpl implements AndroidDevice {
   public String getName() {
     return target.getSerialNumber();
   }
+
+  @Override
+  public boolean isEmulator() {
+    return target.isEmulator();
+  }
+
+  // TODO: -
 }
