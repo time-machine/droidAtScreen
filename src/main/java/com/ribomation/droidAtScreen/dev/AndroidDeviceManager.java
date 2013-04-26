@@ -46,7 +46,7 @@ public class AndroidDeviceManager extends Thread implements
   @Override
   public void deviceDisconnected(IDevice target) {
     log.info("Device disconnected: " + target);
-    //
+    // TODO: -
   }
 
   @Override
@@ -54,7 +54,9 @@ public class AndroidDeviceManager extends Thread implements
     log.info("Device connected: " + target);
     AndroidDevice dev = new AndroidDeviceImpl(target);
     devices.put(dev.getName(), dev);
-    // TODO: -
+    for (AndroidDeviceListener deviceListener : listeners) {
+      deviceListener.connected(dev);
+    }
   }
 
   protected String toMaskString(int mask) {
