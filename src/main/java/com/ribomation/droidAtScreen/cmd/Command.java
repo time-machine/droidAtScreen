@@ -93,6 +93,10 @@ public abstract class Command extends AbstractAction {
     return mi;
   }
 
+  protected JMenuItem newMenuItem() {
+    return new JMenuItem();
+  }
+
   public AbstractButton createButton() {
     AbstractButton b = newButton();
     b.setAction(this);
