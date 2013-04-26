@@ -104,12 +104,12 @@ public class DroidAtScreenApplication implements Application,
   }
 
   // --------------------------------------------
-  // AndroidDeviceManager
+  // AndroidDeviceListener
   // --------------------------------------------
   @Override
   public void connected(final AndroidDevice dev) {
     log.debug("connected: dev = " + dev);
-    //
+    // TODO: -
   }
 
   @Override
