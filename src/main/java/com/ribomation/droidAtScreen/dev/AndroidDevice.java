@@ -9,4 +9,10 @@ public interface AndroidDevice {
    * @return its name
    */
   String getName();
+
+  /**
+   * Returns true if it's an emulator, i.e., not a physical device.
+   * @return true if not physical device
+   */
+  boolean isEmulator();
 }
