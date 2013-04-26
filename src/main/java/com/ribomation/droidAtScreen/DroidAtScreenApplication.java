@@ -109,6 +109,9 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public void connected(final AndroidDevice dev) {
     log.debug("connected: dev = " + dev);
+    if (isSkipEmulator() && dev.isEmulator()) {
+      return;
+    }
     // TODO: -
   }
 
@@ -166,5 +169,15 @@ public class DroidAtScreenApplication implements Application,
   public void setAdbExecutablePath(File value) {
     log.debug("setAdbExecutablePath: " + value);
     deviceManager.setAdbExecutable(value);
+  }
+
+  @Override
+  public void setSkipEmulator(boolean value) {
+    log.debug("setSkipEmulator: " + value);
+  }
+
+  public boolean isSkipEmulator() {
+    SkipEmulatorCommand cmd = Command.find(SkipEmulatorCommand.class);
+    return cmd.isSelected();
   }
 }
