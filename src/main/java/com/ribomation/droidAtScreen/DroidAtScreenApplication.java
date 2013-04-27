@@ -119,7 +119,9 @@ public class DroidAtScreenApplication implements Application,
       @Override
       public void run() {
         fireDeviceConnected(dev);
-        // TODO: -
+        if (isAutoShow()) {
+          // TODO: -
+        }
       }
     });
   }
@@ -127,7 +129,7 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public void disconnected(final AndroidDevice dev) {
     log.debug("disconnected: dev = " + dev);
-    //
+    // TODO: -
   }
 
   // --------------------------------------------
@@ -189,6 +191,16 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public void setSkipEmulator(boolean value) {
     log.debug("setSkipEmulator: " + value);
+  }
+
+  @Override
+  public void setAutoShow(boolean value) {
+    log.debug("setAutoShow: " + value);
+  }
+
+  public boolean isAutoShow() {
+    AutoShowCommand cmd = Command.find(AutoShowCommand.class);
+    return cmd.isSelected();
   }
 
   public boolean isSkipEmulator() {
