@@ -7,6 +7,7 @@ import com.ribomation.droidAtScreen.dev.AndroidDeviceManager;
 import com.ribomation.droidAtScreen.gui.ApplicationFrame;
 import org.apache.log4j.Logger;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -109,10 +110,18 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public void connected(final AndroidDevice dev) {
     log.debug("connected: dev = " + dev);
+
     if (isSkipEmulator() && dev.isEmulator()) {
       return;
     }
-    // TODO: -
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        fireDeviceConnected(dev);
+        // TODO: -
+      }
+    });
   }
 
   @Override
@@ -127,6 +136,12 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public void addAndroidDeviceListener(AndroidDeviceListener listener) {
     deviceListeners.add(listener);
+  }
+
+  public void fireDeviceConnected(AndroidDevice dev) {
+    for (AndroidDeviceListener listener : deviceListeners) {
+      listener.connected(dev);
+    }
   }
 
   // --------------------------------------------
