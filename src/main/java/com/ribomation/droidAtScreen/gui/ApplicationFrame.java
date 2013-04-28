@@ -44,11 +44,18 @@ public class ApplicationFrame extends JFrame {
     pack();
   }
 
-  public void placeinUpperLeftScreen() {
-    placeinUpperLeftScreen(this);
+  public void placeInUpperLeftScreen() {
+    placeInUpperLeftScreen(this);
   }
 
-  public static void placeinUpperLeftScreen(Window win) {
+  public static void placeInCenterScreen(Window win) {
+    Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+    Dimension frame = win.getSize();
+    win.setLocation((screen.width - frame.width) / 2,
+        (screen.height - frame.height) / 2);
+  }
+
+  public static void placeInUpperLeftScreen(Window win) {
     Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
     Dimension frame = win.getSize();
     win.setLocation(screen.width / 4 - frame.width / 2,
@@ -85,6 +92,10 @@ public class ApplicationFrame extends JFrame {
     p.add(devices);
     p.add(Command.get("Show").createButton());
     return p;
+  }
+
+  public ComboBoxModel getDeviceList() {
+    return deviceListModel;
   }
 
   protected JMenuBar createMenubar() {
