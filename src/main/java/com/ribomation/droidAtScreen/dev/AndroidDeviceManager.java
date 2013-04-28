@@ -43,17 +43,6 @@ public class AndroidDeviceManager extends Thread implements
   }
 
   @Override
-  public void deviceChanged(IDevice dev, int changeMask) {
-    log.debug("Device changed: " + dev + ", mask=" + toMaskString(changeMask));
-  }
-
-  @Override
-  public void deviceDisconnected(IDevice target) {
-    log.info("Device disconnected: " + target);
-    // TODO: -
-  }
-
-  @Override
   public void deviceConnected(IDevice target) {
     log.info("Device connected: " + target);
     AndroidDevice dev = new AndroidDeviceImpl(target);
@@ -61,6 +50,22 @@ public class AndroidDeviceManager extends Thread implements
     for (AndroidDeviceListener deviceListener : listeners) {
       deviceListener.connected(dev);
     }
+  }
+
+  @Override
+  public void deviceDisconnected(IDevice target) {
+    log.info("Device disconnected: " + target);
+    AndroidDevice dev = devices.remove(new AndroidDeviceImpl(target).getName());
+    if (dev != null) {
+      for (AndroidDeviceListener deviceListener : listeners) {
+        deviceListener.disconnected(dev);
+      }
+    }
+  }
+
+  @Override
+  public void deviceChanged(IDevice dev, int changeMask) {
+    log.debug("Device changed: " + dev + ", mask=" + toMaskString(changeMask));
   }
 
   protected String toMaskString(int mask) {
