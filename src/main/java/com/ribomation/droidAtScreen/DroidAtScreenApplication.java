@@ -5,6 +5,7 @@ import com.ribomation.droidAtScreen.dev.AndroidDevice;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceManager;
 import com.ribomation.droidAtScreen.gui.ApplicationFrame;
+import com.ribomation.droidAtScreen.gui.DeviceFrame;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -21,6 +22,7 @@ public class DroidAtScreenApplication implements Application,
   private AndroidDeviceManager deviceManager;
   private ApplicationFrame appFrame;
   private Preferences appPreferences;
+  private Map<String, DeviceFrame> devices = new HashMap<String, DeviceFrame>();
   private List<AndroidDeviceListener> deviceListeners =
       new ArrayList<AndroidDeviceListener>();
   private final String appPropertiesPath = "/META-INF/maven/com.ribomation/" +
@@ -89,7 +91,7 @@ public class DroidAtScreenApplication implements Application,
 
   private void run() {
     log.debug("run");
-    getAppFrame().placeinUpperLeftScreen();
+    getAppFrame().placeInUpperLeftScreen();
     getAppFrame().setVisible(true);
   }
 
@@ -120,7 +122,7 @@ public class DroidAtScreenApplication implements Application,
       public void run() {
         fireDeviceConnected(dev);
         if (isAutoShow()) {
-          // TODO: -
+          showDevice(dev);
         }
       }
     });
@@ -130,6 +132,86 @@ public class DroidAtScreenApplication implements Application,
   public void disconnected(final AndroidDevice dev) {
     log.debug("disconnected: dev = " + dev);
     // TODO: -
+  }
+
+  @Override
+  public void showDevice(AndroidDevice dev) {
+    log.debug("showDevice: " + dev);
+    try {
+      DeviceFrame devFrame = new DeviceFrame(this, dev, isPortrait(),
+          getScale(), getFrameRate());
+      ApplicationFrame.placeInCenterScreen(devFrame);
+      devFrame.setVisible(true);
+      devices.put(devFrame.getFrameName(), devFrame);
+    }
+    catch (Exception e) {
+      String msg = e.getMessage();
+      log.debug("Failed to create DeviceFrame: " + msg);
+      if (msg.lastIndexOf("device offline") > 0) {
+        JOptionPane.showMessageDialog(getAppFrame(), "The ADB claims the " +
+            "device is offline. Please, unplug/replug the device and/or " +
+            "restart this application.", "Device offline",
+            JOptionPane.ERROR_MESSAGE);
+      }
+      else {
+        JOptionPane.showMessageDialog(getAppFrame(), "Failed to show device. " +
+            e, "Device failure", JOptionPane.ERROR_MESSAGE);
+      }
+    }
+
+    Command.get("Show").setEnabled(true);
+    Command.get("ScreenShot").setEnabled(true);
+  }
+
+  @Override
+  public void hideDevice(DeviceFrame dev, boolean doDispose) {
+    log.debug("hideDevice: " + dev.getFrameName());
+    DeviceFrame deviceFrame = devices.remove(dev.getFrameName());
+    if (deviceFrame != null) {
+      log.debug("Disposing devFrame: " + deviceFrame.getDevice());
+      if (doDispose) {
+        deviceFrame.dispose();
+      }
+    }
+
+    if (devices.isEmpty()) {
+      Command.get("ScreenShot").setEnabled(false);
+    }
+    if (deviceManager.getDevices().isEmpty()) {
+      Command.get("Show").setEnabled(false);
+    }
+  }
+
+  public void hideDevice(AndroidDevice dev) {
+    log.debug("hideDevice: " + dev);
+
+    for (DeviceFrame df : new ArrayList<DeviceFrame>(devices.values())) {
+      if (df.getFrameName().startsWith(dev.getName())) {
+        hideDevice(df, true);
+      }
+    }
+  }
+
+  public void updateDevice(AndroidDevice dev) {
+    log.debug("updateDevice: " + dev);
+    hideDevice(dev);
+    showDevice(dev);
+  }
+
+  @Override
+  public AndroidDevice getSelectedDevice() {
+    String devName = (String) getAppFrame().getDeviceList().getSelectedItem();
+
+    if (devName != null) {
+      if (devices.containsKey(devName)) {
+        return devices.get(devName).getDevice();
+      }
+      if (deviceManager.getDevices().containsKey(devName)) {
+        return deviceManager.getDevices().get(devName);
+      }
+    }
+
+    return null;
   }
 
   // --------------------------------------------
@@ -198,6 +280,24 @@ public class DroidAtScreenApplication implements Application,
     log.debug("setAutoShow: " + value);
   }
 
+  @Override
+  public void setScale(int value) {
+    log.debug("setScale: " + value);
+    updateDevice(getSelectedDevice());
+  }
+
+  @Override
+  public void setPortraitMode(boolean value) {
+    log.debug("setPortraitMode: " + value);
+    updateDevice(getSelectedDevice());
+  }
+
+  @Override
+  public void setFrameRate(int value) {
+    log.debug("setFrameRate: " + value);
+    updateDevice(getSelectedDevice());
+  }
+
   public boolean isAutoShow() {
     AutoShowCommand cmd = Command.find(AutoShowCommand.class);
     return cmd.isSelected();
@@ -206,5 +306,20 @@ public class DroidAtScreenApplication implements Application,
   public boolean isSkipEmulator() {
     SkipEmulatorCommand cmd = Command.find(SkipEmulatorCommand.class);
     return cmd.isSelected();
+  }
+
+  public boolean isPortrait() {
+    PortraitCommand cmd = Command.find(PortraitCommand.class);
+    return cmd.isSelected();
+  }
+
+  public int getScale() {
+    ScaleCommand cmd = Command.find(ScaleCommand.class);
+    return cmd.getScale();
+  }
+
+  public int getFrameRate() {
+    FrameRateCommand cmd = Command.find(FrameRateCommand.class);
+    return cmd.getRate();
   }
 }
