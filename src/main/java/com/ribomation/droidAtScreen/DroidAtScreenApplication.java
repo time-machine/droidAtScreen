@@ -131,7 +131,14 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public void disconnected(final AndroidDevice dev) {
     log.debug("disconnected: dev = " + dev);
-    // TODO: -
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        fireDeviceDisconnected(dev);
+        hideDevice(dev);
+      }
+    });
   }
 
   @Override
@@ -225,6 +232,12 @@ public class DroidAtScreenApplication implements Application,
   public void fireDeviceConnected(AndroidDevice dev) {
     for (AndroidDeviceListener listener : deviceListeners) {
       listener.connected(dev);
+    }
+  }
+
+  public void fireDeviceDisconnected(AndroidDevice dev) {
+    for (AndroidDeviceListener listener : deviceListeners) {
+      listener.disconnected(dev);
     }
   }
 
