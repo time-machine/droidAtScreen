@@ -28,6 +28,10 @@ public class AndroidDeviceManager extends Thread implements
     AndroidDebugBridge.addDeviceChangeListener(this);
   }
 
+  public Map<String, AndroidDevice> getDevices() {
+    return Collections.unmodifiableMap(devices);
+  }
+
   public void addAndroidDeviceListener(AndroidDeviceListener l) {
     listeners.add(l);
   }
