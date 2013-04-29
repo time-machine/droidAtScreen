@@ -74,6 +74,5 @@ public class FrameRateCommand extends Command {
     p.add(framesPerSecond);
 
     return p;
-    //
   }
 }
