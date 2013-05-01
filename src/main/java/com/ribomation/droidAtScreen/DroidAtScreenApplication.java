@@ -278,6 +278,19 @@ public class DroidAtScreenApplication implements Application,
   }
 
   @Override
+  public void destroyPreferences() {
+    if (appPreferences != null) {
+      try {
+        appPreferences.removeNode();
+        appPreferences = null;
+      }
+      catch (BackingStoreException e) {
+        log.error("Failed to destroy application properties.", e);
+      }
+    }
+  }
+
+  @Override
   public void setAdbExecutablePath(File value) {
     log.debug("setAdbExecutablePath: " + value);
     deviceManager.setAdbExecutable(value);

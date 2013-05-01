@@ -26,6 +26,7 @@ public interface Application {
   void setPortraitMode(boolean landscape);
   void setFrameRate(int rate);
   void savePreferences();
+  void destroyPreferences();
   void showDevice(AndroidDevice dev);
   void hideDevice(DeviceFrame dev, boolean doDispose);
 }
