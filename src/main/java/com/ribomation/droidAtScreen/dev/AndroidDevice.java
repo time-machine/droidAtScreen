@@ -7,6 +7,11 @@ import java.awt.image.BufferedImage;
  */
 public interface AndroidDevice {
   /**
+   * Models the device state
+   */
+  enum ConnectionState { booting, offline, online }
+
+  /**
    * Returns its device name.
    * @return its name
    */
