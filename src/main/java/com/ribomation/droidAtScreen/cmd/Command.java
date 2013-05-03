@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +62,10 @@ public abstract class Command extends AbstractAction {
     Command c = cmds.get(name.toLowerCase());
     if (c != null) return c;
     return loadCommand(name);
+  }
+
+  protected static Map<String, Command> getCmds() {
+    return cmds;
   }
 
   protected Logger getLog() {
@@ -122,6 +127,19 @@ public abstract class Command extends AbstractAction {
   }
   public static void setApplication(Application application) {
     Command.application = application;
+  }
+
+  protected ImageIcon loadIcon(String name) {
+    return loadImage(name, "png");
+  }
+
+  protected ImageIcon loadImage(String name, String ext) {
+    String path = "/img/" + name + "." + ext.toLowerCase();
+    URL url = this.getClass().getResource(path);
+    if (url != null) {
+      return new ImageIcon(url);
+    }
+    throw new IllegalArgumentException("Image not found: " + path);
   }
 
   protected static Command loadCommand(String name) {
