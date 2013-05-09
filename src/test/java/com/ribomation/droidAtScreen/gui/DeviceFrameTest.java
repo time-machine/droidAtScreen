@@ -10,7 +10,7 @@ import java.io.File;
 import org.junit.Test;
 
 public class DeviceFrameTest implements AndroidDeviceListener {
-  private String adbCmdPath = "";
+  private String adbCmdPath = "/usr/lib/android-sdk-linux/platform-tools/adb";
   private AndroidDeviceManager mgr;
   private JFrame win;
 
