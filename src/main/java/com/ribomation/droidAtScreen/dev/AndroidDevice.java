@@ -24,6 +24,12 @@ public interface AndroidDevice {
   boolean isEmulator();
 
   /**
+   * Returns its connect state
+   * @return its state
+   */
+  ConnectionState getState();
+
+  /**
    * Captures and returns a screen-shot from the device.
    * @return a new screen shot
    * @throws RuntimeException if it failed
