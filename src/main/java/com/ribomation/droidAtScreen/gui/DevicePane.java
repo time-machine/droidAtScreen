@@ -73,8 +73,23 @@ public class DevicePane extends JPanel {
     this.frameRate = rate;
   }
 
+  public BufferedImage getLastScreenShot() {
+    return lastScreenShot;
+  }
+
   public void setLastScreenShot(BufferedImage lastScreenShot) {
     this.lastScreenShot = lastScreenShot;
+  }
+
+  protected void paintComponent(Graphics g) {
+    BufferedImage img = getLastScreenShot();
+    if (img == null) {
+      return;
+    }
+
+    int x = (this.getWidth() - img.getWidth()) / 2;
+    int y = (this.getHeight() - img.getHeight()) / 2;
+    g.drawImage(img, x, y, this);
   }
 
   private BufferedImage fetchScreenshot() {
