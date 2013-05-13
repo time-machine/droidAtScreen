@@ -11,13 +11,13 @@ import java.io.File;
 import java.io.IOException;
 
 public class ScreenShotCommand extends Command {
-  private static final String JPG = "jpg";
+  private static final String PNG = "png";
   private File lastFile = null;
 
   public ScreenShotCommand() {
-    setLabel("Save ScreenShot as JPG");
+    setLabel("Save ScreenShot as PNG");
     setTooltip("Takes a screen-shot of the current device and saves it as " +
-        "JPG file.");
+        "PNG file.");
     setEnabled(false);
   }
 
@@ -29,10 +29,10 @@ public class ScreenShotCommand extends Command {
     final BufferedImage screenShot = dev.getScreenShot();
     JFileChooser chooser = new JFileChooser(lastFile);
     chooser.setSelectedFile(lastFile != null? lastFile :
-        new File("droidAtScreen.jpg"));
+        new File("droidAtScreen.png"));
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-    chooser.addChoosableFileFilter(new FileNameExtensionFilter("JPG Files",
-        "jpg"));
+    chooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG Files",
+        "png"));
 
     int rc = chooser.showSaveDialog(app.getAppFrame());
     if (rc == JFileChooser.APPROVE_OPTION) {
@@ -48,7 +48,7 @@ public class ScreenShotCommand extends Command {
                   "Overwrite file", JOptionPane.YES_OPTION);
               if (rc != JOptionPane.YES_OPTION) return;
             }
-            ImageIO.write(screenShot, JPG, lastFile);
+            ImageIO.write(screenShot, PNG, lastFile);
           }
           catch (IOException e) {
             JOptionPane.showMessageDialog(app.getAppFrame(),
