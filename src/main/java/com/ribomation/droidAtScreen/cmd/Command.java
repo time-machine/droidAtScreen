@@ -125,6 +125,7 @@ public abstract class Command extends AbstractAction {
     }
     return application;
   }
+
   public static void setApplication(Application application) {
     Command.application = application;
   }
