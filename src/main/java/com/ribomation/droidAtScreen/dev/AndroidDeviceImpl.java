@@ -4,11 +4,13 @@ import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
 
 import java.awt.image.BufferedImage;
+// TODO: -
 
 /**
  * Implementation of {@link com.ribomation.droidAtScreen.dev.AndroidDevice},
  * that hides all Android tool specific invocations.
  */
+// TODO: -
 public class AndroidDeviceImpl implements AndroidDevice {
   private IDevice target;
 
@@ -24,6 +26,17 @@ public class AndroidDeviceImpl implements AndroidDevice {
   @Override
   public boolean isEmulator() {
     return target.isEmulator();
+  }
+
+  // TODO: -
+
+  @Override
+  public ConnectionState getState() {
+    IDevice.DeviceState s = target.getState();
+    if (s == IDevice.DeviceState.ONLINE) return ConnectionState.online;
+    if (s == IDevice.DeviceState.BOOTLOADER) return ConnectionState.booting;
+    if (s == IDevice.DeviceState.OFFLINE) return ConnectionState.offline;
+    return ConnectionState.offline;
   }
 
   @Override
