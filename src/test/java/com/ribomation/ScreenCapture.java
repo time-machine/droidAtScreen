@@ -11,11 +11,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+
 import org.junit.Test;
 
 public class ScreenCapture {
-  // private String adbCmdPath = "/usr/lib/android-sdk-linux/platform-tools/adb";
-  private String adbCmdPath = "/Applications/android-sdk-macosx/platform-tools/adb";
+  private String adbCmdPath = "/usr/lib/android-sdk-linux/platform-tools/adb";
+  // private String adbCmdPath = "/Applications/android-sdk-macosx/platform-tools/adb";
   private AndroidDeviceManager mgr;
   public static void main(String[] args) throws InterruptedException {
     ScreenCapture app = new ScreenCapture();
@@ -114,6 +115,15 @@ public class ScreenCapture {
     DevicePane(AndroidDevice dev) {
       this.dev = dev;
       updateSize(dev.getScreenShot());
+    }
+
+    protected void paintComponent(Graphics g) {
+      BufferedImage img = dev.getScreenShot();
+      updateSize(img);
+
+      int x = (this.getWidth() - img.getWidth()) / 2;
+      int y = (this.getHeight() - img.getHeight()) / 2;
+      g.drawImage(img, x, y, this);
     }
 
     protected void updateSize(BufferedImage img) {
