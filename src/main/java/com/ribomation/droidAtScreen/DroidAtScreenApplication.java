@@ -16,6 +16,9 @@ import java.util.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+/**
+ * Main entry point of this application
+ */
 public class DroidAtScreenApplication implements Application,
     AndroidDeviceListener {
   private Logger log = Logger.getLogger(DroidAtScreenApplication.class);
@@ -99,7 +102,14 @@ public class DroidAtScreenApplication implements Application,
     log.debug("postStart");
     AdbExePathCommand adbPath = Command.find(AdbExePathCommand.class);
     if (adbPath.isNotDefined()) {
-      adbPath.execute();
+      String pathAndroidHome = System.getenv("ANDROID_HOME");
+      File adb = new File(pathAndroidHome + "/platform-tools/adb");
+      if (adb.isFile()) {
+        adbPath.setPreferenceValue(adb.getAbsolutePath());
+      }
+      else {
+        adbPath.execute();
+      }
     }
     else {
       setAdbExecutablePath(adbPath.getFile());

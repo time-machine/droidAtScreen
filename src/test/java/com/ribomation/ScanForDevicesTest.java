@@ -9,8 +9,8 @@ import org.junit.BeforeClass;
 import org.junit.AfterClass;
 
 public class ScanForDevicesTest {
-  private static String adbCmdPath =
-      "/usr/lib/android-sdk-linux/platform-tools/adb";
+  private static String adbCmdPath = System.getenv("ANDROID_HOME") +
+      "/platform-tools/adb";
   private static AndroidDebugBridge adb;
 
   @BeforeClass

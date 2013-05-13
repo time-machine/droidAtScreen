@@ -15,8 +15,8 @@ import java.io.File;
 import org.junit.Test;
 
 public class ScreenCapture {
-  private String adbCmdPath = "/usr/lib/android-sdk-linux/platform-tools/adb";
-  // private String adbCmdPath = "/Applications/android-sdk-macosx/platform-tools/adb";
+  private String adbCmdPath = System.getenv("ANDROID_HOME") +
+      "/platform-tools/adb";
   private AndroidDeviceManager mgr;
   public static void main(String[] args) throws InterruptedException {
     ScreenCapture app = new ScreenCapture();
