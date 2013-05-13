@@ -82,6 +82,19 @@ public class AndroidDeviceManager extends Thread implements
     return result.toString();
   }
 
+  // Comment this as this will terminate ADB after used and caused next run
+  // shows the device connnected as ????????
+  // @Override
+  // public void run() {
+  //   try {
+  //     AndroidDebugBridge.disconnectBridge();
+  //     AndroidDebugBridge.terminate();
+  //   }
+  //   catch (Exception e) {
+  //     System.err.println("Failed to shutdown Android Device Bridge " + e);
+  //   }
+  // }
+
   /**
    * The ADB object.
    */
