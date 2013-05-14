@@ -61,7 +61,7 @@ public class CommandTest {
 
   @Test
   public void testLoadIcon() throws Exception {
-    Icon i = target.loadIcon("exit");
+    Icon i = target.loadIcon("about");
     assertThat(i, notNullValue());
     assertThat(i, instanceOf(Icon.class));
   }
