@@ -9,6 +9,7 @@ public class AboutCommand extends Command {
   public AboutCommand() {
     setLabel("About...");
     setTooltip("Shows info about this application");
+    setIcon("about");
     setMnemonic('A');
   }
 
