@@ -3,26 +3,41 @@ package com.ribomation.droidAtScreen.cmd;
 import com.ribomation.droidAtScreen.Application;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+/**
+ * Set the device frame projection scale, as a percentage.
+ */
 public class ScaleCommand extends Command {
   private static Integer[] scales = {25, 50, 75, 100, 125, 150, 175, 200, 250,
       300};
 
   public ScaleCommand() {
+    int scale = getPreferenceValue();
+    updateView(scale);
+    setIcon("zoom");
     setLabel("Projection Scale");
     setTooltip("Sets the projection scale % of the Android Device. 100% is " +
         "normal size");
+    setMnemonic('Q');
+  }
+
+  private void updateView(int scale) {
+    setLabel(String.format("Scale (%d%%)", scale));
   }
 
   @Override
   protected void doExecute(Application app) {
-    Integer percentage = (Integer) JOptionPane.showInputDialog(
-        app.getAppFrame(), "Choose the projection scale %", "Scale %?",
-        JOptionPane.QUESTION_MESSAGE, null, scales, getPreferenceValue());
-    if (percentage == null) return;
-
-    setPreferenceValue(percentage);
-    getApplication().setScale(percentage);
+    JDialog dialog = new JDialog(app.getAppFrame(), "Set the Device Frame Scale",
+        true);
+    JOptionPane optPane = new JOptionPane(createScalePane(dialog),
+        JOptionPane.QUESTION_MESSAGE);
+    dialog.setContentPane(optPane);
+    dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    dialog.pack();
+    dialog.setVisible(true);
   }
 
   protected void setPreferenceValue(int value) {
@@ -40,5 +55,41 @@ public class ScaleCommand extends Command {
 
   public int getScale() {
     return getPreferenceValue();
+  }
+
+  private JPanel createScalePane(final JDialog dialog) {
+    JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    p.setBorder(BorderFactory.createTitledBorder("Projection Scale"));
+
+    ActionListener action = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int percentage = Integer.parseInt(e.getActionCommand());
+        dialog.dispose();
+        setPreferenceValue(percentage);
+        updateView(percentage);
+        getApplication().setScale(percentage);
+      }
+    };
+
+    ButtonGroup scale = new ButtonGroup();
+    for (int s : scales) {
+      JRadioButton rb = createScaleRadioButton(s, action);
+      scale.add(rb);
+      p.add(rb);
+    }
+
+    return p;
+  }
+
+  private JRadioButton createScaleRadioButton(int percentage,
+      ActionListener action) {
+    JRadioButton r = new JRadioButton(percentage + "%");
+    r.setActionCommand(Integer.toString(percentage));
+    r.addActionListener(action);
+    if (percentage == getPreferenceValue()) {
+      r.setSelected(true);
+    }
+    return r;
   }
 }
