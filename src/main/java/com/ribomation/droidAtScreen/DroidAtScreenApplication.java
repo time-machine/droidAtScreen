@@ -117,7 +117,7 @@ public class DroidAtScreenApplication implements Application,
   }
 
   // --------------------------------------------
-  // AndroidDeviceListener
+  // AndroidDeviceManager
   // --------------------------------------------
   @Override
   public void connected(final AndroidDevice dev) {
@@ -178,6 +178,7 @@ public class DroidAtScreenApplication implements Application,
 
     Command.get("Show").setEnabled(true);
     Command.get("ScreenShot").setEnabled(true);
+    Command.get("Orientation").setEnabled(true);
   }
 
   @Override
@@ -345,8 +346,8 @@ public class DroidAtScreenApplication implements Application,
   }
 
   public boolean isPortrait() {
-    PortraitCommand cmd = Command.find(PortraitCommand.class);
-    return cmd.isSelected();
+    OrientationCommand cmd = Command.find(OrientationCommand.class);
+    return !cmd.isSelected();
   }
 
   public int getScale() {
