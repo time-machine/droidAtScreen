@@ -88,6 +88,15 @@ public abstract class Command extends AbstractAction {
     putValue(Action.SHORT_DESCRIPTION, label);
   }
 
+  protected void setIcon(Icon ico) {
+    putValue(Action.SMALL_ICON, ico);
+    putValue(Action.LARGE_ICON_KEY, ico);
+  }
+
+  protected void setIcon(String icoName) {
+    setIcon(loadIcon(icoName));
+  }
+
   protected void setMnemonic(char ch) {
     putValue(Action.MNEMONIC_KEY, new Integer(ch));
   }
@@ -109,7 +118,10 @@ public abstract class Command extends AbstractAction {
   }
 
   protected AbstractButton newButton() {
-    return new JButton();
+    JButton b = new JButton();
+    b.setVerticalTextPosition(AbstractButton.BOTTOM);
+    b.setHorizontalTextPosition(AbstractButton.CENTER);
+    return b;
   }
 
   public JPanel createPane() {
