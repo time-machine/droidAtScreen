@@ -2,6 +2,7 @@ package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
 
+@Deprecated
 public class PortraitCommand extends CheckBoxCommand {
   public PortraitCommand() {
     setLabel("Portrait");
