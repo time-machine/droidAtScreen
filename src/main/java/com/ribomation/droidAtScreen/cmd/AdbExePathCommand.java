@@ -12,6 +12,7 @@ public class AdbExePathCommand extends Command {
   public AdbExePathCommand() {
     setLabel("ADB Executable Path");
     setTooltip("Sets the path to the Android Device Debugger (ADB) executable");
+    setIcon("app");
   }
 
   @Override
