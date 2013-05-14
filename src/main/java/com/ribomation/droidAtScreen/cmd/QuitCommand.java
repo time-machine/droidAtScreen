@@ -11,6 +11,7 @@ public class QuitCommand extends Command {
   public QuitCommand() {
     setLabel("Quit");
     setTooltip("Quits the application");
+    setIcon("exit");
     setMnemonic('Q');
   }
 

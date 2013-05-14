@@ -24,6 +24,7 @@ public interface Application {
   void setSkipEmulator(boolean skip);
   void setAdbExecutablePath(File file);
   void setPortraitMode(boolean portrait);
+  void setUpsideDown(boolean upsideDown);
   void setFrameRate(int rate);
   void savePreferences();
   void destroyPreferences();

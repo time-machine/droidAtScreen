@@ -14,11 +14,10 @@ import java.io.IOException;
  * Takes a screen-shot of the current device image.
  */
 public class ScreenShotCommand extends Command {
-  private static final String PNG = "png";
   private File lastFile = null;
 
   public ScreenShotCommand() {
-    setLabel("Screen-Shot");
+    setLabel("Capture");
     setIcon("camera");
     setTooltip("Takes a screen-shot of the current device and saves it as a " +
         "PNG file.");
@@ -53,7 +52,7 @@ public class ScreenShotCommand extends Command {
                   "Overwrite file", JOptionPane.YES_OPTION);
               if (rc != JOptionPane.YES_OPTION) return;
             }
-            ImageIO.write(screenShot, PNG, lastFile);
+            ImageIO.write(screenShot, "png", lastFile);
           }
           catch (IOException e) {
             JOptionPane.showMessageDialog(app.getAppFrame(),

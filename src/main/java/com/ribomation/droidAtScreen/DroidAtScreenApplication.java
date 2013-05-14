@@ -156,14 +156,14 @@ public class DroidAtScreenApplication implements Application,
     log.debug("showDevice: " + dev);
     try {
       DeviceFrame devFrame = new DeviceFrame(this, dev, isPortrait(),
-          getScale(), getFrameRate());
+          isUpsideDown(), getScale(), getFrameRate());
       ApplicationFrame.placeInCenterScreen(devFrame);
       devFrame.setVisible(true);
       devices.put(devFrame.getFrameName(), devFrame);
     }
     catch (Exception e) {
       String msg = e.getMessage();
-      log.debug("Failed to create DeviceFrame: " + msg);
+      log.debug("Failed to create DeviceFrame: " + msg, e);
       if (msg.lastIndexOf("device offline") > 0) {
         JOptionPane.showMessageDialog(getAppFrame(), "The ADB claims the " +
             "device is offline. Please, unplug/replug the device and/or " +
@@ -330,33 +330,38 @@ public class DroidAtScreenApplication implements Application,
   }
 
   @Override
+  public void setUpsideDown(boolean value) {
+    log.debug("setUpsideDown: " + value);
+    updateDevice(getSelectedDevice());
+  }
+
+  @Override
   public void setFrameRate(int value) {
     log.debug("setFrameRate: " + value);
     updateDevice(getSelectedDevice());
   }
 
   public boolean isAutoShow() {
-    AutoShowCommand cmd = Command.find(AutoShowCommand.class);
-    return cmd.isSelected();
+    return Command.<CheckBoxCommand>find(AutoShowCommand.class).isSelected();
   }
 
   public boolean isSkipEmulator() {
-    SkipEmulatorCommand cmd = Command.find(SkipEmulatorCommand.class);
-    return cmd.isSelected();
+    return Command.<CheckBoxCommand>find(SkipEmulatorCommand.class).isSelected();
   }
 
   public boolean isPortrait() {
-    OrientationCommand cmd = Command.find(OrientationCommand.class);
-    return !cmd.isSelected();
+    return !Command.<CheckBoxCommand>find(OrientationCommand.class).isSelected();
+  }
+
+  public boolean isUpsideDown() {
+    return Command.<CheckBoxCommand>find(UpsideDownCommand.class).isSelected();
   }
 
   public int getScale() {
-    ScaleCommand cmd = Command.find(ScaleCommand.class);
-    return cmd.getScale();
+    return Command.<ScaleCommand>find(ScaleCommand.class).getScale();
   }
 
   public int getFrameRate() {
-    FrameRateCommand cmd = Command.find(FrameRateCommand.class);
-    return cmd.getRate();
+    return Command.<FrameRateCommand>find(FrameRateCommand.class).getRate();
   }
 }

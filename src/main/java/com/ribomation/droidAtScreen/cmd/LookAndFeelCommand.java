@@ -6,10 +6,14 @@ import javax.swing.*;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * Prompts the user for a Look & Feel to set for the UI.
+ */
 public class LookAndFeelCommand extends Command {
   public LookAndFeelCommand() {
     setLabel("Set Look & Feel");
     setTooltip("Let you choose which Look & Feel to use.");
+    setIcon("lookandfeel");
   }
 
   @Override

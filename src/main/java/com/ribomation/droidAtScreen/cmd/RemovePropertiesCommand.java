@@ -8,6 +8,7 @@ public class RemovePropertiesCommand extends Command {
   public RemovePropertiesCommand() {
     setLabel("Remove application properties");
     setTooltip("Removes all saved application properties from this host.");
+    setIcon("remove");
   }
 
   @Override

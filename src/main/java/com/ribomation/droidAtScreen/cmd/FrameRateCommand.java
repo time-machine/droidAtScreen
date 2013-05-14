@@ -18,6 +18,7 @@ public class FrameRateCommand extends Command {
     setLabel("Frame Rate");
     setTooltip("Sets the rate of how many screen-shots should be taken per " +
         "second");
+    setIcon("rate");
   }
 
   @Override

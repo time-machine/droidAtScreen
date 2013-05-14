@@ -17,9 +17,14 @@ public class DeviceFrame extends JFrame {
 
   public DeviceFrame(Application app, AndroidDevice device, boolean portrait,
       int scalePercentage, int frameRate) {
+    this(app, device, portrait, false, scalePercentage, frameRate);
+  }
+
+  public DeviceFrame(Application app, AndroidDevice device, boolean portrait,
+      boolean upsideDown, int scalePercentage, int frameRate) {
     // log.debug(String.format("DeviceFrame(device=%s, portrait=%s,
-    //     scalePercentage=%d, frameRate=%d)", device, portrait, scalePercentage,
-    //     frameRate));
+    //     upsideDown=%s, scalePercentage=%d, frameRate=%d)", device, portrait,
+    //     upsideDown, scalePercentage, frameRate));
     this.app = app;
     setFrameName(device.getName());
 
@@ -31,7 +36,8 @@ public class DeviceFrame extends JFrame {
       }
     });
 
-    pane = new DevicePane(this, device, portrait, scalePercentage, frameRate);
+    pane = new DevicePane(this, device, portrait, upsideDown, scalePercentage,
+        frameRate);
     this.add(pane);
     this.pack();
   }
