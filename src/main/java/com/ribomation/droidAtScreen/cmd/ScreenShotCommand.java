@@ -10,13 +10,17 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Takes a screen-shot of the current device image.
+ */
 public class ScreenShotCommand extends Command {
   private static final String PNG = "png";
   private File lastFile = null;
 
   public ScreenShotCommand() {
-    setLabel("Save ScreenShot as PNG");
-    setTooltip("Takes a screen-shot of the current device and saves it as " +
+    setLabel("Screen-Shot");
+    setIcon("camera");
+    setTooltip("Takes a screen-shot of the current device and saves it as a " +
         "PNG file.");
     setEnabled(false);
   }
@@ -28,6 +32,7 @@ public class ScreenShotCommand extends Command {
 
     final BufferedImage screenShot = dev.getScreenShot();
     JFileChooser chooser = new JFileChooser(lastFile);
+    chooser.setCurrentDirectory(null);
     chooser.setSelectedFile(lastFile != null? lastFile :
         new File("droidAtScreen.png"));
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
