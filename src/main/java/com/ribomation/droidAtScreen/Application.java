@@ -23,7 +23,7 @@ public interface Application {
   void setAutoShow(boolean show);
   void setSkipEmulator(boolean skip);
   void setAdbExecutablePath(File file);
-  void setPortraitMode(boolean landscape);
+  void setPortraitMode(boolean portrait);
   void setFrameRate(int rate);
   void savePreferences();
   void destroyPreferences();
