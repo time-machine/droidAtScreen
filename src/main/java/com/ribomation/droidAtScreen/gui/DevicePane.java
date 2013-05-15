@@ -26,7 +26,6 @@ public class DevicePane extends JPanel {
   private Timer timer;
   private int frameRate = 15, scalePercentage = 100;
   private boolean portrait = true, upsideDown = true;
-  private AffineTransformOp transformOP = null;
   private AffineTransform scaleTX, upsideDownTX;
 
   public DevicePane(DeviceFrame deviceFrame, AndroidDevice dev,
@@ -64,6 +63,25 @@ public class DevicePane extends JPanel {
     g.drawImage(img, x, y, this);
   }
 
+  protected void updateView() {
+    updateView(fetchScreenshot());
+  }
+
+  protected void updateView(BufferedImage img) {
+    Dimension sz = new Dimension(img.getWidth() + 12, img.getHeight() + 34);
+    this.setMinimumSize(sz);
+    this.setPreferredSize(sz);
+    this.setSize(sz);
+
+    deviceFrame.setPreferredSize(add(sz, deviceFrame.getInsets()));
+    deviceFrame.pack();
+  }
+
+  protected Dimension add(Dimension sz, Insets pad) {
+    return new Dimension(pad.left + sz.width + pad.right, pad.top + sz.height +
+        pad.bottom);
+  }
+
   private BufferedImage fetchScreenshot() {
     BufferedImage img = device.getScreenShot(!this.portrait);
     if (img == null) return null;
@@ -86,24 +104,6 @@ public class DevicePane extends JPanel {
     }
 
     return img;
-  }
-
-  protected void updateView() {
-    updateView(fetchScreenshot());
-  }
-
-  protected void updateView(BufferedImage img) {
-    Dimension sz = new Dimension(img.getWidth(), img.getHeight());
-    this.setMinimumSize(sz);
-    this.setSize(sz);
-
-    deviceFrame.setPreferredSize(add(sz, deviceFrame.getInsets()));
-    deviceFrame.pack();
-  }
-
-  protected Dimension add(Dimension sz, Insets pad) {
-    return new Dimension(pad.left + sz.width + pad.right, pad.top + sz.height +
-        pad.bottom);
   }
 
   public void update() {

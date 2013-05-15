@@ -9,6 +9,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Frame holder for the device image.
+ */
 public class DeviceFrame extends JFrame {
   private Logger log = Logger.getLogger(DeviceFrame.class);
   private Application app;
@@ -22,9 +25,9 @@ public class DeviceFrame extends JFrame {
 
   public DeviceFrame(Application app, AndroidDevice device, boolean portrait,
       boolean upsideDown, int scalePercentage, int frameRate) {
-    // log.debug(String.format("DeviceFrame(device=%s, portrait=%s,
-    //     upsideDown=%s, scalePercentage=%d, frameRate=%d)", device, portrait,
-    //     upsideDown, scalePercentage, frameRate));
+    log.debug(String.format("DeviceFrame(device=%s, portrait=%s, " +
+        "upsideDown=%s, scalePercentage=%s, frameRate=%s)", device, portrait,
+        upsideDown, scalePercentage, frameRate));
     this.app = app;
     setFrameName(device.getName());
 
