@@ -6,6 +6,7 @@ import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceManager;
 import com.ribomation.droidAtScreen.gui.ApplicationFrame;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
+import com.ribomation.droidAtScreen.gui.GuiUtil;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -94,7 +95,7 @@ public class DroidAtScreenApplication implements Application,
 
   private void run() {
     log.debug("run");
-    getAppFrame().placeInUpperLeftScreen();
+    GuiUtil.placeInUpperLeftScreen(getAppFrame());
     getAppFrame().setVisible(true);
   }
 
@@ -164,12 +165,13 @@ public class DroidAtScreenApplication implements Application,
     try {
       DeviceFrame devFrame = new DeviceFrame(this, dev, isPortrait(),
           isUpsideDown(), getScale(), getFrameRate());
-      ApplicationFrame.placeInCenterScreen(devFrame);
+      GuiUtil.placeInCenterScreen(devFrame);
       devFrame.setVisible(true);
       devices.put(devFrame.getFrameName(), devFrame);
     }
     catch (Exception e) {
       log.debug("Failed showing device", e);
+      fireDeviceDisconnected(dev);
 
       String title = "Device failure";
       String msg = "Failed to show device: " + e.getMessage();
