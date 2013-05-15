@@ -7,7 +7,7 @@ public class ShowCommand extends Command {
   public ShowCommand() {
     setLabel("Show");
     setTooltip("Shows the current device");
-    setEnabled(false);
+    setEnabledOnlyWithDevice(true);
   }
 
   @Override

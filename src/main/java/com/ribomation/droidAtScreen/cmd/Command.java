@@ -1,6 +1,8 @@
 package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.dev.AndroidDevice;
+import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -12,14 +14,17 @@ import java.util.Map;
 /**
  * Base class of all app commands.
  */
-public abstract class Command extends AbstractAction {
+public abstract class Command extends AbstractAction implements
+    AndroidDeviceListener{
   private Logger log;
   private static Application application;
   private static Map<String, Command> cmds = new HashMap<String, Command>();
   private String name;
+  private boolean enabledOnlyWithDevice = false;
 
   {
     log = Logger.getLogger(this.getClass());
+    getApplication().addAndroidDeviceListener(this);
   }
 
   protected Command() {
@@ -30,6 +35,29 @@ public abstract class Command extends AbstractAction {
   protected Command(String name) {
     this.name = name;
     cmds.put(this.getName(), this);
+  }
+
+  public boolean isEnabledOnlyWithDevice() {
+    return enabledOnlyWithDevice;
+  }
+
+  public void setEnabledOnlyWithDevice(boolean enabledOnlyWithDevice) {
+    this.enabledOnlyWithDevice = enabledOnlyWithDevice;
+    setEnabled(!enabledOnlyWithDevice);
+  }
+
+  @Override
+  public void connected(AndroidDevice dev) {
+    if (isEnabledOnlyWithDevice()) {
+      setEnabled(true);
+    }
+  }
+
+  @Override
+  public void disconnected(AndroidDevice dev) {
+    if (isEnabledOnlyWithDevice() && getApplication().getAppFrame().getDeviceList().getSize() == 0) {
+      setEnabled(false);
+    }
   }
 
   protected abstract void doExecute(Application app);

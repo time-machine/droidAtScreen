@@ -169,23 +169,19 @@ public class DroidAtScreenApplication implements Application,
       devices.put(devFrame.getFrameName(), devFrame);
     }
     catch (Exception e) {
-      String msg = e.getMessage();
-      log.debug("Failed to create DeviceFrame: " + msg, e);
-      if (msg.lastIndexOf("device offline") > 0) {
-        JOptionPane.showMessageDialog(getAppFrame(), "The ADB claims the " +
-            "device is offline. Please, unplug/replug the device and/or " +
-            "restart this application.", "Device offline",
-            JOptionPane.ERROR_MESSAGE);
-      }
-      else {
-        JOptionPane.showMessageDialog(getAppFrame(), "Failed to show device. " +
-            e, "Device failure", JOptionPane.ERROR_MESSAGE);
-      }
-    }
+      log.debug("Failed showing device", e);
 
-    Command.get("Show").setEnabled(true);
-    Command.get("ScreenShot").setEnabled(true);
-    Command.get("Orientation").setEnabled(true);
+      String title = "Device failure";
+      String msg = "Failed to show device: " + e.getMessage();
+      if (msg.lastIndexOf("device offline") > 0) {
+        title = "Device offline";
+        msg = "The ADB claims the device is offline. Please, unplug/replug " +
+            "the device and/or restart this application.";
+      }
+
+      JOptionPane.showMessageDialog(getAppFrame(), msg, title,
+          JOptionPane.ERROR_MESSAGE);
+    }
   }
 
   @Override

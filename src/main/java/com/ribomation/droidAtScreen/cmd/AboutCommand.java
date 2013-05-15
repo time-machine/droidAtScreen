@@ -15,13 +15,19 @@ public class AboutCommand extends Command {
 
   @Override
   protected void doExecute(Application app) {
-    String icon = "Icon";
-    String txt = "Details";
     JPanel content = new JPanel(new BorderLayout(5, 0));
-    content.add(new JLabel(icon), BorderLayout.WEST);
-    content.add(new JLabel(txt), BorderLayout.CENTER);
+    content.add(new JLabel(loadIcon("about")), BorderLayout.WEST);
+    content.add(new JLabel("<html>" + systemInfo()), BorderLayout.CENTER);
 
     JOptionPane.showMessageDialog(null, content, app.getName() + " - Version " +
         app.getVersion(), JOptionPane.PLAIN_MESSAGE);
+  }
+
+  private String systemInfo() {
+    return "<h2>System Information</h2>" + String.format(
+        "<p style=\"text-align:left; color:lightGray;\">%s, %s<br/>" +
+        "%s. Version %s</p>", System.getProperty("os.name"),
+        System.getProperty("os.arch"), System.getProperty("java.vm.name"),
+        System.getProperty("java.runtime.version"));
   }
 }

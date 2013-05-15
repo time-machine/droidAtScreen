@@ -10,6 +10,7 @@ public class UpsideDownCommand extends CheckBoxCommand {
     setLabel("Upside-Down");
     setTooltip("Flips the image upside-down. Useful for ZTE Blade devices.");
     setIcon("upsidedown");
+    setEnabledOnlyWithDevice(true);
   }
 
   @Override

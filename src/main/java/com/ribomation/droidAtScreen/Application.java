@@ -2,6 +2,7 @@ package com.ribomation.droidAtScreen;
 
 import com.ribomation.droidAtScreen.dev.AndroidDevice;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
+import com.ribomation.droidAtScreen.gui.ApplicationFrame;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
 
 import javax.swing.*;
@@ -13,7 +14,7 @@ import java.util.prefs.Preferences;
  * the app.
  */
 public interface Application {
-  JFrame getAppFrame();
+  ApplicationFrame getAppFrame();
   AndroidDevice getSelectedDevice();
   String getName();
   String getVersion();

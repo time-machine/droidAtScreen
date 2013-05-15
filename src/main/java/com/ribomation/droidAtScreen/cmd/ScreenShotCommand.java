@@ -21,7 +21,7 @@ public class ScreenShotCommand extends Command {
     setIcon("camera");
     setTooltip("Takes a screen-shot of the current device and saves it as a " +
         "PNG file.");
-    setEnabled(false);
+    setEnabledOnlyWithDevice(true);
   }
 
   @Override
