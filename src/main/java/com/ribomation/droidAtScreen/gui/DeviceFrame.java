@@ -26,7 +26,7 @@ public class DeviceFrame extends JFrame {
   public DeviceFrame(Application app, AndroidDevice device, boolean portrait,
       boolean upsideDown, int scalePercentage, int frameRate) {
     log.debug(String.format("DeviceFrame(device=%s, portrait=%s, " +
-        "upsideDown=%s, scalePercentage=%s, frameRate=%s)", device, portrait,
+        "upsideDown=%s, scalePercentage=%d, frameRate=%d)", device, portrait,
         upsideDown, scalePercentage, frameRate));
     this.app = app;
     setFrameName(device.getName());

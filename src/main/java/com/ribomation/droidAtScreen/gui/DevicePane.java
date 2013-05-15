@@ -24,19 +24,20 @@ public class DevicePane extends JPanel {
   private DeviceFrame deviceFrame;
   private AndroidDevice device;
   private Timer timer;
-  private int frameRate = 15, scalePercentage = 100;
+  private int updatesPerMinute = 1, scalePercentage = 100;
   private boolean portrait = true, upsideDown = true;
   private AffineTransform scaleTX, upsideDownTX;
 
   public DevicePane(DeviceFrame deviceFrame, AndroidDevice dev,
-      boolean portrait, boolean upsideDown, int scalePercentage, int frameRate) {
+      boolean portrait, boolean upsideDown, int scalePercentage,
+      int updatesPerMinute) {
     super(new BorderLayout(), true);
     this.deviceFrame = deviceFrame;
     this.device = dev;
     this.portrait = portrait;
     this.upsideDown = upsideDown;
     this.scalePercentage = scalePercentage;
-    this.frameRate = frameRate;
+    this.updatesPerMinute = updatesPerMinute;
     updateView();
   }
 
@@ -83,7 +84,12 @@ public class DevicePane extends JPanel {
   }
 
   private BufferedImage fetchScreenshot() {
+    long start = System.nanoTime();
     BufferedImage img = device.getScreenShot(!this.portrait);
+    long elapsed = System.nanoTime() - start;
+    final double UNIT = 1000 * 1000.0;
+    log.info(String.format("Fetching screen, elapsed time %.3f ms",
+        elapsed / UNIT));
     if (img == null) return null;
 
     if (scalePercentage != 100) {
@@ -112,9 +118,9 @@ public class DevicePane extends JPanel {
   }
 
   public void start() {
-    long updatePeriod = 1000L / frameRate;
+    long updatePeriod = (long)(1000L / (updatesPerMinute / 60.0));
     timer = new Timer("ScreenShot Updater");
-    timer.scheduleAtFixedRate(new Updater(), 2 * updatePeriod, updatePeriod);
+    timer.scheduleAtFixedRate(new Updater(), 1000, updatePeriod);
   }
 
   public void stop() {

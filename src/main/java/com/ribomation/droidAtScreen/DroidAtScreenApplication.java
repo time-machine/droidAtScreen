@@ -194,13 +194,6 @@ public class DroidAtScreenApplication implements Application,
         deviceFrame.dispose();
       }
     }
-
-    if (devices.isEmpty()) {
-      Command.get("ScreenShot").setEnabled(false);
-    }
-    if (deviceManager.getDevices().isEmpty()) {
-      Command.get("Show").setEnabled(false);
-    }
   }
 
   public void hideDevice(AndroidDevice dev) {
