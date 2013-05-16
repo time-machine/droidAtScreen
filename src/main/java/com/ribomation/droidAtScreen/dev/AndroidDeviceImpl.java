@@ -2,9 +2,9 @@ package com.ribomation.droidAtScreen.dev;
 
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
+import org.apache.log4j.Logger;
 
 import java.awt.image.BufferedImage;
-// TODO: -
 
 /**
  * Implementation of {@link com.ribomation.droidAtScreen.dev.AndroidDevice},
@@ -12,6 +12,8 @@ import java.awt.image.BufferedImage;
  */
 // TODO: -
 public class AndroidDeviceImpl implements AndroidDevice {
+  private static final double SECS = 1000 * 1000 * 1000.0D;
+  private final Logger log = Logger.getLogger(AndroidDeviceImpl.class);
   private IDevice target;
 
   public AndroidDeviceImpl(IDevice target) {
@@ -19,35 +21,14 @@ public class AndroidDeviceImpl implements AndroidDevice {
   }
 
   @Override
-  public String getName() {
-    return target.getSerialNumber();
-  }
-
-  @Override
-  public boolean isEmulator() {
-    return target.isEmulator();
-  }
-
-  // TODO: -
-
-  @Override
-  public ConnectionState getState() {
-    IDevice.DeviceState s = target.getState();
-    if (s == IDevice.DeviceState.ONLINE) return ConnectionState.online;
-    if (s == IDevice.DeviceState.BOOTLOADER) return ConnectionState.booting;
-    if (s == IDevice.DeviceState.OFFLINE) return ConnectionState.offline;
-    return ConnectionState.offline;
-  }
-
-  @Override
-  public BufferedImage getScreenShot() {
-    return getScreenShot(false);
-  }
-
-  @Override
   public BufferedImage getScreenShot(boolean landscapeMode) {
     try {
+      long start = System.nanoTime();
       RawImage screenShot = target.getScreenshot();
+      long elapsed = System.nanoTime() - start;
+      log.debug(String.format("Got image: elapsed %.4f secs, %d bytes",
+          elapsed / SECS, (screenShot != null ? screenShot.data.length : 0)));
+
       if (screenShot == null) return null;
       if (landscapeMode) {
         screenShot = screenShot.getRotated();
@@ -65,9 +46,34 @@ public class AndroidDeviceImpl implements AndroidDevice {
       }
 
       return image;
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new RuntimeException("Failed to capture device screen shot: " + e);
     }
   }
+
+  @Override
+  public BufferedImage getScreenShot() {
+    return getScreenShot(false);
+  }
+
+  @Override
+  public ConnectionState getState() {
+    IDevice.DeviceState s = target.getState();
+    if (s == IDevice.DeviceState.ONLINE) return ConnectionState.online;
+    if (s == IDevice.DeviceState.BOOTLOADER) return ConnectionState.booting;
+    if (s == IDevice.DeviceState.OFFLINE) return ConnectionState.offline;
+    return ConnectionState.offline;
+  }
+
+  @Override
+  public String getName() {
+    return target.getSerialNumber();
+  }
+
+  @Override
+  public boolean isEmulator() {
+    return target.isEmulator();
+  }
+
+  // TODO: -
 }

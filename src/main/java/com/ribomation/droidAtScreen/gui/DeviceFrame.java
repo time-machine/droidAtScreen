@@ -5,8 +5,10 @@ import com.ribomation.droidAtScreen.dev.AndroidDevice;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -43,6 +45,21 @@ public class DeviceFrame extends JFrame {
         frameRate);
     this.add(pane);
     this.pack();
+  }
+
+  @Override
+  public void paint(Graphics g) {
+    super.paint(g);
+    if (g instanceof Graphics2D) {
+      Graphics2D g2 = (Graphics2D)g;
+      log.debug("is Graphics2D");
+    }
+    final Dimension size = this.getSize();
+    final Insets insets = this.getInsets();
+    final BufferedImage img = pane.getLastScreenShot();
+    log.debug(String.format("size=%s, margin=%s", size, insets));
+    log.debug(String.format("img.size=%s", new Dimension(img.getWidth(),
+        img.getHeight())));
   }
 
   protected void setFrameName(String devName) {

@@ -66,7 +66,7 @@ public class ScreenShotCommand extends Command {
             BufferedImage screenShot = dev.getScreenShot();
             ImageIO.write(screenShot, getFormat(imageFile), imageFile);
           }
-          catch (IOException e) {
+          catch (Exception e) {
             JOptionPane.showMessageDialog(app.getAppFrame(),
                 "Failed to save file " + imageFile + ". " + e.getMessage(),
                 "Failure", JOptionPane.ERROR_MESSAGE);
@@ -78,7 +78,7 @@ public class ScreenShotCommand extends Command {
           final int dot = name.lastIndexOf('.');
           if (dot > 0) {
             String ext = name.substring(dot + 1).toUpperCase();
-            if (Array.asList(fmtCmd.getFormats()).contains(ext)) {
+            if (Arrays.asList(fmtCmd.getFormats()).contains(ext)) {
               return ext;
             }
           }

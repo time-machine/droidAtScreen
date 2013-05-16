@@ -45,7 +45,7 @@ public class ImageFormatCommand extends Command {
     return getApplication().getPreferences().get(getPreferencesKey(), "png");
   }
 
-  public String[] getCurrentFormat() {
+  public String getCurrentFormat() {
     return getPreferenceValue();
   }
 
