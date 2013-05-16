@@ -28,6 +28,18 @@ public class AndroidDeviceManager extends Thread implements
     AndroidDebugBridge.addDeviceChangeListener(this);
   }
 
+  public void init() {
+    if (getAdbExecutable() != null && getAdb() == null) {
+      try {
+        adb = AndroidDebugBridge.createBridge(
+            getAdbExecutable().getCanonicalPath(), false);
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to created the absolute path to " +
+            "the ADB executable: " + getAdbExecutable());
+      }
+    }
+  }
+
   public Map<String, AndroidDevice> getDevices() {
     return Collections.unmodifiableMap(devices);
   }
@@ -99,6 +111,10 @@ public class AndroidDeviceManager extends Thread implements
    * The ADB object.
    */
   private AndroidDebugBridge adb;
+
+  public AndroidDebugBridge getAdb() {
+    return adb;
+  }
 
   /**
    * Refers the ADB executable.
