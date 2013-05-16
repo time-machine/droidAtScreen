@@ -24,7 +24,7 @@ public interface Application {
   void setAutoShow(boolean show);
   void setSkipEmulator(boolean skip);
   void setAdbExecutablePath(File file);
-  void setPortraitMode(boolean portrait);
+  void setLandscapeMode(boolean portrait);
   void setUpsideDown(boolean upsideDown);
   void setFrameRate(int rate);
   void savePreferences();
