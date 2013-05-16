@@ -6,6 +6,9 @@ import com.ribomation.droidAtScreen.gui.GuiUtil;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Shows some info about this app.
+ */
 public class AboutCommand extends Command {
   public AboutCommand() {
     setLabel("About...");
