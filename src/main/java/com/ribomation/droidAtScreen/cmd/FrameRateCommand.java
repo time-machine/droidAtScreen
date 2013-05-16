@@ -19,7 +19,7 @@ public class FrameRateCommand extends Command {
   }
 
   public void updateView(int rate) {
-    setLabel(String.format("Frame Rate (%d frames/min", rate));
+    setLabel(String.format("Frame Rate (%d frames/min)", rate));
   }
 
   @Override
