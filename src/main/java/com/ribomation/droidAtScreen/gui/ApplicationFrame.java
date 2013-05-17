@@ -16,13 +16,14 @@ public class ApplicationFrame extends JFrame {
   private Logger log = Logger.getLogger(ApplicationFrame.class);
   private Application application;
   private DefaultComboBoxModel deviceListModel = new DefaultComboBoxModel();
+  private StatusBar statusBar;
 
-  private final String[] toolbar = {"Orientation", "Scale", "-", "ScreenShot",
+  private final String[] TOOLBAR = {"Orientation", "Scale", "-", "ScreenShot",
       "Video", "-", "Quit"};
-  private final String[] fileMenu = {"ScreenShot", "Video", "-", "Quit"};
-  private final String[] viewMenu = {"Orientation", "Scale", "UpsideDown"};
-  private final String[] helpMenu = {"About"};
-  private final String[] optionsMenu = {"ImageFormat", "FrameRate", "-",
+  private final String[] FILE_MENU = {"ScreenShot", "Video", "-", "Quit"};
+  private final String[] VIEW_MENU = {"Orientation", "Scale", "UpsideDown"};
+  private final String[] HELP_MENU = {"About"};
+  private final String[] OPTIONS_MENU = {"ImageFormat", "FrameRate", "-",
       "AutoShow", "SkipEmulator", "AskBeforeQuit", "-", "AdbExePath", "-",
       "LookAndFeel", "-", "RemoveProperties"};
 
@@ -45,6 +46,13 @@ public class ApplicationFrame extends JFrame {
   public void setApplication(Application application) {
     this.application = application;
   }
+  public StatusBar getStatusBar() {
+    return statusBar;
+  }
+
+  public ComboBoxModel getDeviceList() {
+    return deviceListModel;
+  }
 
   public void initGUI() {
     setIconImage(GuiUtil.loadIcon("device").getImage());
@@ -65,10 +73,10 @@ public class ApplicationFrame extends JFrame {
 
   protected JMenuBar createMenubar() {
     JMenuBar mb = new JMenuBar();
-    mb.add(GuiUtil.createMenu("File", 'F', fileMenu));
-    mb.add(GuiUtil.createMenu("View", 'V', viewMenu));
-    mb.add(GuiUtil.createMenu("Options", 'O', optionsMenu));
-    mb.add(GuiUtil.createMenu("Help", 'H', helpMenu));
+    mb.add(GuiUtil.createMenu("File", 'F', FILE_MENU));
+    mb.add(GuiUtil.createMenu("View", 'V', VIEW_MENU));
+    mb.add(GuiUtil.createMenu("Options", 'O', OPTIONS_MENU));
+    mb.add(GuiUtil.createMenu("Help", 'H', HELP_MENU));
     return mb;
   }
 
@@ -102,9 +110,5 @@ public class ApplicationFrame extends JFrame {
     p.add(devices);
     p.add(Command.get("Show").createButton());
     return p;
-  }
-
-  public ComboBoxModel getDeviceList() {
-    return deviceListModel;
   }
 }
