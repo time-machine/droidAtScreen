@@ -66,8 +66,9 @@ public class ApplicationFrame extends JFrame {
       }
     });
     setJMenuBar(createMenubar());
-    add(GuiUtil.createToolbar(toolbar), BorderLayout.NORTH);
+    add(GuiUtil.createToolbar(TOOLBAR), BorderLayout.NORTH);
     add(createDeviceControlPane(), BorderLayout.CENTER);
+    add(statusBar = new StatusBar(application), BorderLayout.SOUTH);
     pack();
   }
 

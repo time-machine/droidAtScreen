@@ -112,14 +112,14 @@ public class DroidAtScreenApplication implements Application,
     File adbFile = new File(System.getenv("ANDROID_HOME") + adbExe);
     if (adbFile.isFile()) {
       adbCmd.setPreferenceValue(adbFile.getAbsolutePath());
-      setAdbExecutablePath(adbFile.getAbsolutePath());
+      setAdbExecutablePath(adbFile.getAbsoluteFile());
       return;
     }
 
     adbFile = new File(System.getenv("ANDROID_SDK_HOME") + adbExe);
     if (adbFile.isFile()) {
       adbCmd.setPreferenceValue(adbFile.getAbsolutePath());
-      setAdbExecutablePath(adbFile.getAbsolutePath());
+      setAdbExecutablePath(adbFile.getAbsoluteFile());
       return;
     }
 
@@ -188,6 +188,11 @@ public class DroidAtScreenApplication implements Application,
       JOptionPane.showMessageDialog(getAppFrame(), msg, title,
           JOptionPane.ERROR_MESSAGE);
     }
+  }
+
+  @Override
+  public void hideDevice(DeviceFrame dev) {
+    hideDevice(dev, true);
   }
 
   @Override

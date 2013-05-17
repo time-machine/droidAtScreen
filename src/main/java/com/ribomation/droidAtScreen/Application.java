@@ -30,5 +30,6 @@ public interface Application {
   void savePreferences();
   void destroyPreferences();
   void showDevice(AndroidDevice dev);
+  void hideDevice(DeviceFrame dev);
   void hideDevice(DeviceFrame dev, boolean doDispose);
 }
