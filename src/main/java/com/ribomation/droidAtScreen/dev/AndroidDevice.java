@@ -43,7 +43,6 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
       if (timings.size() > MAX_TIMINGS) timings.removeFirst();
 
       ScreenImage image = new ScreenImage(rawImage);
-      log.debug(String.format("Captured %s in %.4f secs", image, elapsed / SECS));
 
       return image;
     } catch (TimeoutException e) {

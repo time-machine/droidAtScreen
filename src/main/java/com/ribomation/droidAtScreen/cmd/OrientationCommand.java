@@ -23,12 +23,16 @@ public class OrientationCommand extends CheckBoxCommand {
   protected void notifyApplication(Application app, boolean landscape) {
     app.setLandscapeMode(landscape);
     updateView(landscape);
-    app.getAppFrame().repaint();
+    app.getAppFrame().validate();
   }
 
   private void updateView(boolean landscape) {
     setLabel(landscape ? "Landscape" : "Portrait");
     setIcon("orientation-" + getLabel().toLowerCase().trim());
+  }
+
+  public boolean isLandscape() {
+    return getPreferenceValue();
   }
 
   @Override

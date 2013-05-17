@@ -6,7 +6,6 @@ import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceManager;
 import com.ribomation.droidAtScreen.gui.ApplicationFrame;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
-import com.ribomation.droidAtScreen.gui.GuiUtil;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -26,13 +25,13 @@ public class DroidAtScreenApplication implements Application,
   private AndroidDeviceManager deviceManager;
   private ApplicationFrame appFrame;
   private Preferences appPreferences;
-  private Map<String, DeviceFrame> devices = new HashMap<String, DeviceFrame>();
   private List<AndroidDeviceListener> deviceListeners =
       new ArrayList<AndroidDeviceListener>();
   private final String appPropertiesPath = "/META-INF/maven/com.ribomation/" +
       "droidAtScreen/pom.properties";
   private String appName = "Droid@Screen";
   private String appVersion = "0.1";
+  private Map<String, DeviceFrame> devices = new HashMap<String, DeviceFrame>();
 
   public static void main(String[] args) {
     DroidAtScreenApplication app = new DroidAtScreenApplication();
@@ -95,7 +94,6 @@ public class DroidAtScreenApplication implements Application,
 
   private void run() {
     log.debug("run");
-    GuiUtil.placeInUpperLeftScreen(getAppFrame());
     getAppFrame().setVisible(true);
   }
 
@@ -132,19 +130,10 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public void connected(final AndroidDevice dev) {
     log.debug("connected: dev = " + dev);
-    getAppFrame().getStatusBar().message("Connected to " + dev.getName());
-
-    if (isSkipEmulator() && dev.isEmulator()) {
-      return;
-    }
-
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        fireDeviceConnected(dev);
-        if (isAutoShow()) {
-          showDevice(dev);
-        }
+        addDevice(dev);
       }
     });
   }
@@ -152,72 +141,34 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public void disconnected(final AndroidDevice dev) {
     log.debug("disconnected: dev = " + dev);
-    getAppFrame().getStatusBar().message("Disconnected from " + dev.getName());
-
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        fireDeviceDisconnected(dev);
-        hideDevice(dev);
+        removeDevice(dev);
       }
     });
   }
 
-  @Override
-  public void showDevice(AndroidDevice dev) {
-    log.debug("showDevice: " + dev);
-    try {
-      DeviceFrame devFrame = new DeviceFrame(this, dev, isPortrait(),
-          isUpsideDown(), getScale(), getFrameRate());
-      GuiUtil.placeInCenterScreen(devFrame);
-      devFrame.setVisible(true);
-      devices.put(devFrame.getFrameName(), devFrame);
-    }
-    catch (Exception e) {
-      log.debug("Failed showing device", e);
-      fireDeviceDisconnected(dev);
+  public void addDevice(AndroidDevice dev) {
+    getAppFrame().getStatusBar().message("Connected to " + dev.getName());
+    DeviceFrame frame = new DeviceFrame(this, dev, isPortrait(), isUpsideDown(),
+        getScale(), getFrameRate());
+    devices.put(frame.getName(), frame);
+    fireDeviceConnected(dev);
+    frame.setVisibleEnabled(true);
+  }
 
-      String title = "Device failure";
-      String msg = "Failed to show device: " + e.getMessage();
-      if (msg.lastIndexOf("device offline") > 0) {
-        title = "Device offline";
-        msg = "The ADB claims the device is offline. Please, unplug/replug " +
-            "the device and/or restart this application.";
-      }
-
-      JOptionPane.showMessageDialog(getAppFrame(), msg, title,
-          JOptionPane.ERROR_MESSAGE);
-    }
+  public void removeDevice(AndroidDevice dev) {
+    getAppFrame().getStatusBar().message("Disconnected from " + dev.getName());
+    fireDeviceDisconnected(dev);
+    DeviceFrame frame = devices.remove(dev.getName());
+    if (frame == null) return;
+    frame.setVisibleEnabled(false);
+    frame.dispose();
   }
 
   @Override
-  public void hideDevice(DeviceFrame dev) {
-    hideDevice(dev, true);
-  }
-
-  @Override
-  public void hideDevice(DeviceFrame dev, boolean doDispose) {
-    log.debug("hideDevice: " + dev.getFrameName());
-    DeviceFrame deviceFrame = devices.remove(dev.getFrameName());
-    if (deviceFrame != null) {
-      log.debug("Disposing devFrame: " + deviceFrame.getDevice());
-      if (doDispose) {
-        deviceFrame.dispose();
-      }
-    }
-  }
-
-  public void hideDevice(AndroidDevice dev) {
-    log.debug("hideDevice: " + dev);
-
-    for (DeviceFrame df : new ArrayList<DeviceFrame>(devices.values())) {
-      if (df.getFrameName().startsWith(dev.getName())) {
-        hideDevice(df, true);
-      }
-    }
-  }
-
-  public DeviceFrame getCurrentFrame() {
+  public DeviceFrame getSelectedDevice() {
     String devName = (String)getAppFrame().getDeviceList().getSelectedItem();
     DeviceFrame frame = devices.get(devName);
     if (frame == null) {
@@ -227,19 +178,8 @@ public class DroidAtScreenApplication implements Application,
   }
 
   @Override
-  public AndroidDevice getSelectedDevice() {
-    String devName = (String) getAppFrame().getDeviceList().getSelectedItem();
-
-    if (devName != null) {
-      if (devices.containsKey(devName)) {
-        return devices.get(devName).getDevice();
-      }
-      if (deviceManager.getDevices().containsKey(devName)) {
-        return deviceManager.getDevices().get(devName);
-      }
-    }
-
-    return null;
+  public Map<String, DeviceFrame> getDevices() {
+    return devices;
   }
 
   // --------------------------------------------
@@ -330,25 +270,25 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public void setLandscapeMode(boolean value) {
     log.debug("setLandscapeMode: " + value);
-    getCurrentFrame().setLandscapeMode(value);
+    getSelectedDevice().setLandscapeMode(value);
   }
 
   @Override
   public void setUpsideDown(boolean value) {
     log.debug("setUpsideDown: " + value);
-    getCurrentFrame().setUpsideDown(value);
+    getSelectedDevice().setUpsideDown(value);
   }
 
   @Override
   public void setFrameRate(int value) {
     log.debug("setFrameRate: " + value);
-    getCurrentFrame().setFrameRate(value);
+    getSelectedDevice().setFrameRate(value);
   }
 
   @Override
   public void setScale(int value) {
     log.debug("setScale: " + value);
-    getCurrentFrame().setScale(value);
+    getSelectedDevice().setScale(value);
   }
 
   public boolean isAutoShow() {

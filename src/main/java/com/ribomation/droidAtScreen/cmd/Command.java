@@ -44,21 +44,14 @@ public abstract class Command extends AbstractAction implements
 
   public void setEnabledOnlyWithDevice(boolean enabledOnlyWithDevice) {
     this.enabledOnlyWithDevice = enabledOnlyWithDevice;
-    setEnabled(!enabledOnlyWithDevice);
   }
 
   @Override
   public void connected(AndroidDevice dev) {
-    if (isEnabledOnlyWithDevice()) {
-      setEnabled(true);
-    }
   }
 
   @Override
   public void disconnected(AndroidDevice dev) {
-    if (isEnabledOnlyWithDevice() && getApplication().getAppFrame().getDeviceList().getSize() == 0) {
-      setEnabled(false);
-    }
   }
 
   protected abstract void doExecute(Application app);

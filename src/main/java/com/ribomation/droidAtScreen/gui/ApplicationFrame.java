@@ -59,7 +59,7 @@ public class ApplicationFrame extends JFrame {
     setTitle(getApplication().getName() + ", Version " +
         getApplication().getVersion());
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-    this.addWindowListener(new WindowAdapter() {
+    addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
         Command.find(QuitCommand.class).execute();
@@ -70,6 +70,7 @@ public class ApplicationFrame extends JFrame {
     add(createDeviceControlPane(), BorderLayout.CENTER);
     add(statusBar = new StatusBar(application), BorderLayout.SOUTH);
     pack();
+    setLocationByPlatform(true);
   }
 
   protected JMenuBar createMenubar() {
