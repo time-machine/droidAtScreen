@@ -13,17 +13,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Timer that take screenshots from a device.
  */
 public class ScreenshotTimer extends TimerTask {
+  private static final int MAX_ERRORS = 5;
   private Logger log = Logger.getLogger(ScreenshotTimer.class);
   private AtomicBoolean inProgress = new AtomicBoolean(false);
   private AndroidDevice device;
   private DeviceFrame frame;
   private int errCount = 0;
   private Application app;
-  private static final Timer timer;
-
-  static {
-    timer = new Timer("Screenshot Timer");
-  }
+  private Timer timer;
 
   public ScreenshotTimer(AndroidDevice device, DeviceFrame frame,
       Application app) {
@@ -34,12 +31,14 @@ public class ScreenshotTimer extends TimerTask {
 
   public ScreenshotTimer start(int shotsPerMinute) {
     long updatePeriod = 60 * 1000 / shotsPerMinute;
+    timer = new Timer("Screenshot Timer");
     timer.scheduleAtFixedRate(this, 0, updatePeriod);
     return this;
   }
 
   public void stop() {
     this.cancel();
+    timer = null;
   }
 
   @Override
@@ -47,14 +46,14 @@ public class ScreenshotTimer extends TimerTask {
     if (inProgress.getAndSet(true)) return;
 
     try {
-      BufferedImage image = device.getScreenShot(frame.isLandscapeMode());
+      ScreenImage image = device.getScreenImage();
       frame.setLastScreenshot(image);
     } catch (Exception e) {
       errCount++;
       log.warn(String.format("Failed to get screenshot (%d): %s", errCount,
           e.getMessage()));
 
-      if (errCount > 5) {
+      if (errCount > MAX_ERRORS) {
         stop();
         if (e.getMessage().endsWith("device offline")) {
           app.getAppFrame().getStatusBar().message(device.getName() +

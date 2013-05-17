@@ -2,6 +2,7 @@ package com.ribomation.droidAtScreen.gui;
 
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.dev.AndroidDevice;
+import com.ribomation.droidAtScreen.dev.ScreenImage;
 import com.ribomation.droidAtScreen.dev.ScreenshotTimer;
 import org.apache.log4j.Logger;
 
@@ -32,7 +33,7 @@ public class DeviceFrame extends JFrame {
   private boolean landscapeMode = false;
   private boolean upsideDown = false;
 
-  private BufferedImage lastScreenshot;
+  private ScreenImage lastScreenshot;
   private ScreenshotTimer timer;
   private ImageCanvas canvas;
   private AffineTransform scaleTX;
@@ -102,13 +103,19 @@ public class DeviceFrame extends JFrame {
     }
   }
 
-  public void setLastScreenshot(BufferedImage image) {
+  public void setLastScreenshot(ScreenImage image) {
     lastScreenshot = image;
     updateSize(lastScreenshot.getWidth(), lastScreenshot.getHeight());
     canvas.repaint();
   }
 
   private void updateSize(int width, int height) {
+    if (landscapeMode) {
+      int oldWidth = width;
+      width = height;
+      height = oldWidth;
+    }
+
     Insets margins = this.getInsets();
     Dimension frameSize = new Dimension(margins.left + scale(width) +
         margins.right, margins.top + scale(height) + margins.bottom);
@@ -121,7 +128,7 @@ public class DeviceFrame extends JFrame {
     this.setSize(frameSize);
 
     if (!isVisible()) {
-      GuiUtil.placeInCenterScreen(this);
+      this.setLocationByPlatform(true);
       super.setVisible(true);
     }
   }
@@ -152,13 +159,18 @@ public class DeviceFrame extends JFrame {
           }
         }
 
-        g2.drawImage(lastScreenshot, tx, 0, 0);
+        if (landscapeMode) lastScreenshot.rotate();
+        g2.drawImage(lastScreenshot.toBufferedImage(), tx, 0, 0);
       }
     }
   }
 
-  public boolean isLandscapeMode() {
-    return landscapeMode;
+  public AndroidDevice getDevice() {
+    return device;
+  }
+
+  public String getName() {
+    return device.getName();
   }
 
   protected void setFrameName(String devName) {
@@ -168,9 +180,5 @@ public class DeviceFrame extends JFrame {
 
   public String getFrameName() {
     return getTitle();
-  }
-
-  public AndroidDevice getDevice() {
-    return device;
   }
 }

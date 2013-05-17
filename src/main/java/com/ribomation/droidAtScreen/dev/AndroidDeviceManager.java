@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen.dev;
 
 import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.Client;
 import com.android.ddmlib.IDevice;
 import org.apache.log4j.Logger;
 
@@ -57,7 +58,11 @@ public class AndroidDeviceManager extends Thread implements
   @Override
   public void deviceConnected(IDevice target) {
     log.info("Device connected: " + target);
-    AndroidDevice dev = new AndroidDeviceImpl(target);
+    log.info("Device AVD: " + target.getAvdName());
+    log.info("Device properties: " + target.getProperties());
+    log.info("Device Clients: " + Arrays.asList(target.getClients()));
+
+    AndroidDevice dev = new AndroidDevice(target);
     devices.put(dev.getName(), dev);
     for (AndroidDeviceListener deviceListener : listeners) {
       deviceListener.connected(dev);
@@ -67,7 +72,7 @@ public class AndroidDeviceManager extends Thread implements
   @Override
   public void deviceDisconnected(IDevice target) {
     log.info("Device disconnected: " + target);
-    AndroidDevice dev = devices.remove(new AndroidDeviceImpl(target).getName());
+    AndroidDevice dev = devices.remove(new AndroidDevice(target).getName());
     if (dev != null) {
       for (AndroidDeviceListener deviceListener : listeners) {
         deviceListener.disconnected(dev);
