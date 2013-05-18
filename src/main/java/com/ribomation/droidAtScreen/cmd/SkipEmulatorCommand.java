@@ -9,12 +9,15 @@ public class SkipEmulatorCommand extends CheckBoxCommand {
   }
 
   @Override
-  protected void notifyApplication(Application app, boolean selected) {
-    app.setSkipEmulator(selected);
+  protected void notifyApplication(Application app, boolean selected) {}
+
+  @Override
+  protected boolean getPreferenceValue() {
+    return getApplication().getSettings().isHideEmulators();
   }
 
   @Override
-  protected String getPreferencesKey() {
-    return "skip-emulator";
+  protected void setPreferenceValue(boolean value) {
+    getApplication().getSettings().setHideEmulators(value);
   }
 }

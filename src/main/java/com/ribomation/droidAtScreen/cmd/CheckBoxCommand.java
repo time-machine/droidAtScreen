@@ -22,26 +22,15 @@ public abstract class CheckBoxCommand extends Command {
   @Override
   protected final void doExecute(Application app) {
     boolean selected = !getPreferenceValue();
-    getLog().debug("doExecute: selected = " + selected);
     setPreferenceValue(selected);
     notifyApplication(app, selected);
   }
-
-  protected abstract void notifyApplication(Application app, boolean selected);
-  protected abstract String getPreferencesKey();
-  protected boolean getDefaultValue() { return true; }
 
   public boolean isSelected() {
     return getPreferenceValue();
   }
 
-  protected void setPreferenceValue(boolean value) {
-    getApplication().getPreferences().putBoolean(getPreferencesKey(), value);
-    getApplication().savePreferences();
-  }
-
-  protected boolean getPreferenceValue() {
-    return getApplication().getPreferences().getBoolean(getPreferencesKey(),
-        getDefaultValue());
-  }
+  protected abstract void notifyApplication(Application app, boolean selected);
+  protected abstract boolean getPreferenceValue();
+  protected abstract void setPreferenceValue(boolean value);
 }

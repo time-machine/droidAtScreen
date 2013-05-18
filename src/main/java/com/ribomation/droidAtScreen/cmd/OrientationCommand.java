@@ -15,29 +15,25 @@ public class OrientationCommand extends CheckBoxCommand {
   }
 
   @Override
-  protected boolean getDefaultValue() {
-    return false;
-  }
-
-  @Override
   protected void notifyApplication(Application app, boolean landscape) {
     app.setLandscapeMode(landscape);
     updateView(landscape);
     app.getAppFrame().validate();
   }
 
-  private void updateView(boolean landscape) {
-    setLabel(landscape ? "Landscape" : "Portrait");
-    setIcon("orientation-" + getLabel().toLowerCase().trim());
-  }
-
-  public boolean isLandscape() {
-    return getPreferenceValue();
+  @Override
+  protected boolean getPreferenceValue() {
+    return getApplication().getSettings().isLandscape();
   }
 
   @Override
-  protected String getPreferencesKey() {
-    return "landscape-mode";
+  protected void setPreferenceValue(boolean value) {
+    getApplication().getSettings().setLandscape(value);
+  }
+
+  private void updateView(boolean landscape) {
+    setLabel(landscape ? "Landscape" : "Portrait");
+    setIcon("orientation-" + getLabel().toLowerCase().trim());
   }
 
   @Override

@@ -17,7 +17,12 @@ public class AskBeforeQuitCommand extends CheckBoxCommand {
   }
 
   @Override
-  protected String getPreferencesKey() {
-    return "ask-before-quit";
+  protected boolean getPreferenceValue() {
+    return getApplication().getSettings().isAskBeforeQuit();
+  }
+
+  @Override
+  protected void setPreferenceValue(boolean value) {
+    getApplication().getSettings().setAskBeforeQuit(value);
   }
 }

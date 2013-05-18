@@ -22,16 +22,16 @@ import java.util.prefs.Preferences;
 public class DroidAtScreenApplication implements Application,
     AndroidDeviceListener {
   private Logger log = Logger.getLogger(DroidAtScreenApplication.class);
-  private AndroidDeviceManager deviceManager;
-  private ApplicationFrame appFrame;
-  private Preferences appPreferences;
-  private List<AndroidDeviceListener> deviceListeners =
-      new ArrayList<AndroidDeviceListener>();
   private final String appPropertiesPath = "/META-INF/maven/com.ribomation/" +
       "droidAtScreen/pom.properties";
   private String appName = "Droid@Screen";
   private String appVersion = "0.1";
+  private AndroidDeviceManager deviceManager;
+  private ApplicationFrame appFrame;
   private Map<String, DeviceFrame> devices = new HashMap<String, DeviceFrame>();
+  private List<AndroidDeviceListener> deviceListeners =
+      new ArrayList<AndroidDeviceListener>();
+  private Settings settings;
 
   public static void main(String[] args) {
     DroidAtScreenApplication app = new DroidAtScreenApplication();
@@ -62,17 +62,8 @@ public class DroidAtScreenApplication implements Application,
       }
     }
 
-    try {
-      log.debug("--- Preferences ---");
-      Preferences prefs = getPreferences();
-      for (String key : prefs.keys()) {
-        log.debug(String.format("%s: %s", key, prefs.get(key, "[none]")));
-      }
-      log.debug("--- END ---");
-    }
-    catch (BackingStoreException e) {
-      log.warn("Failed to list prefs", e);
-    }
+    settings = new Settings();
+    settings.dump();
   }
 
   private void initCommands() {
@@ -88,8 +79,8 @@ public class DroidAtScreenApplication implements Application,
 
   private void initAndroid() {
     log.debug("initAndroid");
-    deviceManager = new AndroidDeviceManager();
-    deviceManager.addAndroidDeviceListener(this);
+    deviceManager = new AndroidDeviceManager(this);
+    deviceManager.initManager();
   }
 
   private void run() {
@@ -99,29 +90,39 @@ public class DroidAtScreenApplication implements Application,
 
   private void postStart() {
     log.debug("postStart");
-    AdbExePathCommand adbCmd = Command.find(AdbExePathCommand.class);
-    if (adbCmd.isDefined()) {
-      setAdbExecutablePath(adbCmd.getFile());
-      return;
+
+    File adbExePath = getSettings().getAdbExecutable();
+    if (adbExePath == null) {
+      adbExePath = isExe("ANDROID_HOME");
     }
 
-    String adbExe = "/platform-tools/adb" + (System.getProperty("os.name",
-        "").toLowerCase().startsWith("windows") ? ".exe" : "");
-    File adbFile = new File(System.getenv("ANDROID_HOME") + adbExe);
-    if (adbFile.isFile()) {
-      adbCmd.setPreferenceValue(adbFile.getAbsolutePath());
-      setAdbExecutablePath(adbFile.getAbsoluteFile());
-      return;
+    if (adbExePath == null) {
+      adbExePath = isExe("ANDROID_SDK_HOME");
     }
 
-    adbFile = new File(System.getenv("ANDROID_SDK_HOME") + adbExe);
-    if (adbFile.isFile()) {
-      adbCmd.setPreferenceValue(adbFile.getAbsolutePath());
-      setAdbExecutablePath(adbFile.getAbsoluteFile());
-      return;
+    if (adbExePath == null) {
+      Command.find(AdbExePathCommand.class).execute();
+    } else {
+      getSettings().setAdbExecutable(adbExePath);
+      getDeviceManager().setAdbExecutable(adbExePath);
+      getDeviceManager().createBridge();
     }
+  }
 
-    adbCmd.execute();
+  private File isExe(String envName) {
+    String env = System.getenv(envName);
+    log.debug("isExe: env = " + env);
+    if (env == null) return null;
+
+    String ext = System.getProperty("os.name",
+        "").toLowerCase().startsWith("windows") ? ".exe" : "";
+    File androidHome = new File(env);
+    File platformTools = new File(androidHome, "platform-tools");
+    File file = new File(platformTools, "adb" + ext);
+    log.debug("isExe: file = " + file.getAbsolutePath());
+
+    if (file.isFile() && file.canExecute()) return file;
+    return null;
   }
 
   // --------------------------------------------
@@ -151,8 +152,9 @@ public class DroidAtScreenApplication implements Application,
 
   public void addDevice(AndroidDevice dev) {
     getAppFrame().getStatusBar().message("Connected to " + dev.getName());
-    DeviceFrame frame = new DeviceFrame(this, dev, isPortrait(), isUpsideDown(),
-        getScale(), getFrameRate());
+    DeviceFrame frame = new DeviceFrame(this, dev, getSettings().isLandscape(),
+        getSettings().isUpsideDown(), getSettings().getScale(),
+        getSettings().getFrameRate());
     devices.put(frame.getName(), frame);
     fireDeviceConnected(dev);
     frame.setVisibleEnabled(true);
@@ -170,11 +172,10 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public DeviceFrame getSelectedDevice() {
     String devName = (String)getAppFrame().getDeviceList().getSelectedItem();
-    if (devName == null) throw new RuntimeException("No device selected");
+    if (devName == null) return null;
 
     DeviceFrame frame = devices.get(devName);
-    if (frame == null) throw new RuntimeException("No DeviceFrame with name = " +
-        devName);
+    if (frame == null) return null;
 
     return frame;
   }
@@ -182,6 +183,11 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public Map<String, DeviceFrame> getDevices() {
     return devices;
+  }
+
+  @Override
+  public AndroidDeviceManager getDeviceManager() {
+    return deviceManager;
   }
 
   // --------------------------------------------
@@ -207,56 +213,20 @@ public class DroidAtScreenApplication implements Application,
   // --------------------------------------------
   // Application
   // --------------------------------------------
-  @Override
   public String getName() {
     return appName;
   }
 
-  @Override
   public String getVersion() {
     return appVersion;
   }
 
-  @Override
   public ApplicationFrame getAppFrame() {
     return appFrame;
   }
 
-  @Override
-  public Preferences getPreferences() {
-    if (appPreferences == null) {
-      appPreferences = Preferences.userNodeForPackage(this.getClass());
-    }
-    return appPreferences;
-  }
-
-  @Override
-  public void savePreferences() {
-    try {
-      getPreferences().flush();
-    }
-    catch (BackingStoreException e) {
-      log.info("Failed to flush app preferences", e);
-    }
-  }
-
-  @Override
-  public void destroyPreferences() {
-    if (appPreferences != null) {
-      try {
-        appPreferences.removeNode();
-        appPreferences = null;
-      }
-      catch (BackingStoreException e) {
-        log.error("Failed to destroy application properties.", e);
-      }
-    }
-  }
-
-  @Override
-  public void setAdbExecutablePath(File value) {
-    log.debug("setAdbExecutablePath: " + value);
-    deviceManager.setAdbExecutable(value);
+  public Settings getSettings() {
+    return settings;
   }
 
   @Override
@@ -272,48 +242,44 @@ public class DroidAtScreenApplication implements Application,
   @Override
   public void setLandscapeMode(boolean value) {
     log.debug("setLandscapeMode: " + value);
-    getSelectedDevice().setLandscapeMode(value);
+    DeviceFrame selectedDevice = getSelectedDevice();
+    if (selectedDevice != null) {
+      selectedDevice.setLandscapeMode(value);
+    } else {
+      getAppFrame().getStatusBar().message("No device");
+    }
   }
 
   @Override
   public void setUpsideDown(boolean value) {
     log.debug("setUpsideDown: " + value);
-    getSelectedDevice().setUpsideDown(value);
+    DeviceFrame selectedDevice = getSelectedDevice();
+    if (selectedDevice != null) {
+      selectedDevice.setUpsideDown(value);
+    } else {
+      getAppFrame().getStatusBar().message("No device");
+    }
   }
 
   @Override
   public void setFrameRate(int value) {
     log.debug("setFrameRate: " + value);
-    getSelectedDevice().setFrameRate(value);
+    DeviceFrame selectedDevice = getSelectedDevice();
+    if (selectedDevice != null) {
+      selectedDevice.setFrameRate(value);
+    } else {
+      getAppFrame().getStatusBar().message("No device");
+    }
   }
 
   @Override
   public void setScale(int value) {
     log.debug("setScale: " + value);
-    getSelectedDevice().setScale(value);
-  }
-
-  public boolean isAutoShow() {
-    return Command.<CheckBoxCommand>find(AutoShowCommand.class).isSelected();
-  }
-
-  public boolean isSkipEmulator() {
-    return Command.<CheckBoxCommand>find(SkipEmulatorCommand.class).isSelected();
-  }
-
-  public boolean isPortrait() {
-    return !Command.<CheckBoxCommand>find(OrientationCommand.class).isSelected();
-  }
-
-  public boolean isUpsideDown() {
-    return Command.<CheckBoxCommand>find(UpsideDownCommand.class).isSelected();
-  }
-
-  public int getScale() {
-    return Command.<ScaleCommand>find(ScaleCommand.class).getScale();
-  }
-
-  public int getFrameRate() {
-    return Command.<FrameRateCommand>find(FrameRateCommand.class).getRate();
+    DeviceFrame selectedDevice = getSelectedDevice();
+    if (selectedDevice != null) {
+      selectedDevice.setScale(value);
+    } else {
+      getAppFrame().getStatusBar().message("No device");
+    }
   }
 }

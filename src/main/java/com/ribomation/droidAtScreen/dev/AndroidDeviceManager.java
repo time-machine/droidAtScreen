@@ -3,10 +3,13 @@ package com.ribomation.droidAtScreen.dev;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.Client;
 import com.android.ddmlib.IDevice;
+import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.DroidAtScreenApplication;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.*;
 
 /**
@@ -16,67 +19,108 @@ public class AndroidDeviceManager extends Thread implements
     AndroidDebugBridge.IDebugBridgeChangeListener,
     AndroidDebugBridge.IDeviceChangeListener {
   private Logger log = Logger.getLogger(this.getClass());
-  private List<AndroidDeviceListener> listeners =
-      new ArrayList<AndroidDeviceListener>();
   private Map<String, AndroidDevice> devices =
       new HashMap<String, AndroidDevice>();
+  private File adbExecutable;
+  private Application app;
 
-  public AndroidDeviceManager() {
+  public AndroidDeviceManager(Application app) {
+    this.app = app;
+  }
+
+  public void initManager() {
     AndroidDebugBridge.init(false);
     Runtime.getRuntime().addShutdownHook(this);
-
     AndroidDebugBridge.addDebugBridgeChangeListener(this);
     AndroidDebugBridge.addDeviceChangeListener(this);
   }
 
-  public void init() {
-    if (getAdbExecutable() != null && getAdb() == null) {
-      try {
-        adb = AndroidDebugBridge.createBridge(
-            getAdbExecutable().getCanonicalPath(), false);
-      } catch (IOException e) {
-        throw new RuntimeException("Failed to created the absolute path to " +
-            "the ADB executable: " + getAdbExecutable());
+  public void setAdbExecutable(File adbExecutable) {
+    if (!adbExecutable.isFile()) {
+      throw new RuntimeException("ADB executable '" + adbExecutable +
+          "' is not a file");
+    }
+    if (!adbExecutable.canExecute()) {
+      throw new RuntimeException("ADB executable '" + adbExecutable +
+          "is not executable");
+    }
+    this.adbExecutable = adbExecutable;
+  }
+
+  public File getAdbExecutable() {
+    return adbExecutable;
+  }
+
+  /**
+   * Creates the connection to ADB.
+   */
+  public void createBridge() {
+    if (getAdbExecutable() == null) {
+      throw new IllegalArgumentException("Need to set the ADB exe path first, " +
+          "before starting the bridge.");
+    }
+
+    try {
+      AndroidDebugBridge.createBridge(getAdbExecutable().getCanonicalPath(),
+          false);
+      log.info("Connected to ADB via " + getSocketAddress());
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to create the absolute path to the " +
+          "ADB executable: " + getAdbExecutable());
+    }
+  }
+
+  public boolean restartADB() {
+    return AndroidDebugBridge.getBridge().restart();
+  }
+
+  public void reloadDevices() {
+    synchronized (devices) {
+      for (AndroidDevice dev : devices.values()) {
+        app.disconnected(dev);
+      }
+      devices.clear();
+
+      IDevice[] devs = AndroidDebugBridge.getBridge().getDevices();
+      for (IDevice dev : devs) {
+        devices.put(dev.getSerialNumber(), new AndroidDevice(dev));
+        app.connected(new AndroidDevice(dev));
       }
     }
   }
 
-  public Map<String, AndroidDevice> getDevices() {
-    return Collections.unmodifiableMap(devices);
+  public boolean isConnectedToADB() {
+    return AndroidDebugBridge.getBridge().isConnected();
   }
 
-  public void addAndroidDeviceListener(AndroidDeviceListener l) {
-    listeners.add(l);
+  public InetSocketAddress getSocketAddress() {
+    return AndroidDebugBridge.getSocketAddress();
   }
 
-  @Override
-  public void bridgeChanged(AndroidDebugBridge adb) {
-    this.adb = adb;
-    log.debug("ADB changed");
-  }
-
+  /**
+   * Invoked by ADB, when a new device is attached.
+   * @param target the device
+   */
   @Override
   public void deviceConnected(IDevice target) {
     log.info("Device connected: " + target);
-    log.info("Device AVD: " + target.getAvdName());
-    log.info("Device properties: " + target.getProperties());
-    log.info("Device Clients: " + Arrays.asList(target.getClients()));
-
-    AndroidDevice dev = new AndroidDevice(target);
-    devices.put(dev.getName(), dev);
-    for (AndroidDeviceListener deviceListener : listeners) {
-      deviceListener.connected(dev);
+    synchronized (devices) {
+      AndroidDevice dev = new AndroidDevice(target);
+      devices.put(target.getSerialNumber(), dev);
+      app.connected(dev);
     }
   }
 
+  /**
+   * Invoked by ADB when a device has detached.
+   * @param target the device
+   */
   @Override
   public void deviceDisconnected(IDevice target) {
     log.info("Device disconnected: " + target);
-    AndroidDevice dev = devices.remove(new AndroidDevice(target).getName());
-    if (dev != null) {
-      for (AndroidDeviceListener deviceListener : listeners) {
-        deviceListener.disconnected(dev);
-      }
+    synchronized (devices) {
+      AndroidDevice dev = devices.remove(target.getSerialNumber());
+      if (dev != null) app.disconnected(dev);
     }
   }
 
@@ -85,7 +129,12 @@ public class AndroidDeviceManager extends Thread implements
     log.debug("Device changed: " + dev + ", mask=" + toMaskString(changeMask));
   }
 
-  protected String toMaskString(int mask) {
+  @Override
+  public void bridgeChanged(AndroidDebugBridge adb) {
+    log.info("ADB changed");
+  }
+
+  private String toMaskString(int mask) {
     StringBuilder result = new StringBuilder("");
     if ((mask & IDevice.CHANGE_BUILD_INFO) != 0) {
       result.append("CHANGE_BUILD_INFO ");
@@ -101,6 +150,9 @@ public class AndroidDeviceManager extends Thread implements
 
   // Comment this as this will terminate ADB after used and caused next run
   // shows the device connnected as ????????
+  /**
+   * Invoked during JVM shutdown, to close the bridge
+   */
   // @Override
   // public void run() {
   //   try {
@@ -111,43 +163,4 @@ public class AndroidDeviceManager extends Thread implements
   //     System.err.println("Failed to shutdown Android Device Bridge " + e);
   //   }
   // }
-
-  /**
-   * The ADB object.
-   */
-  private AndroidDebugBridge adb;
-
-  public AndroidDebugBridge getAdb() {
-    return adb;
-  }
-
-  /**
-   * Refers the ADB executable.
-   */
-  private File adbExecutable;
-
-  public File getAdbExecutable() {
-    return adbExecutable;
-  }
-
-  public void setAdbExecutable(File adbExecutable) {
-    if (!adbExecutable.isFile()) {
-      throw new RuntimeException("ADB executable '" + adbExecutable +
-          "' is not a file");
-    }
-    if (!adbExecutable.canExecute()) {
-      throw new RuntimeException("ADB executable '" + adbExecutable +
-          "is not executable");
-    }
-    this.adbExecutable = adbExecutable;
-
-    try {
-      adb = AndroidDebugBridge.createBridge(
-          getAdbExecutable().getCanonicalPath(), false);
-    }
-    catch (IOException e) {
-      throw new RuntimeException("Failed to create the absolute path to the " +
-          "ADB executable: " + getAdbExecutable());
-    }
-  }
 }

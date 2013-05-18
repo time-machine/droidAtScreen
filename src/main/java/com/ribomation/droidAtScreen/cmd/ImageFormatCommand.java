@@ -8,10 +8,8 @@ import javax.swing.*;
  * Sets the default image format, when saving screen-shots.
  */
 public class ImageFormatCommand extends Command {
-  private static final String[] formats = {"PNG", "JPG"};
-
   public ImageFormatCommand() {
-    updateView(getCurrentFormat());
+    updateView(getApplication().getSettings().getImageFormat());
     setIcon("imgfmt");
     setTooltip("Set the default image-format when saving screen-shots.");
   }
@@ -22,34 +20,15 @@ public class ImageFormatCommand extends Command {
 
   @Override
   protected void doExecute(Application app) {
+    String[] formats = app.getSettings().getImageFormats();
     int rc = JOptionPane.showOptionDialog(app.getAppFrame(), "Image Formats",
         "Set default image format", JOptionPane.OK_CANCEL_OPTION,
-        JOptionPane.QUESTION_MESSAGE, null, formats, getPreferenceValue());
+        JOptionPane.QUESTION_MESSAGE, null, formats,
+        app.getSettings().getImageFormat());
 
     if (0 <= rc && rc < formats.length) {
-      setPreferenceValue(formats[rc]);
+      app.getSettings().setImageFormat(formats[rc]);
       updateView(formats[rc]);
     }
-  }
-
-  protected String getPreferencesKey() {
-    return "image-format";
-  }
-
-  protected void setPreferenceValue(String value) {
-    getApplication().getPreferences().put(getPreferencesKey(), value);
-    getApplication().savePreferences();
-  }
-
-  protected String getPreferenceValue() {
-    return getApplication().getPreferences().get(getPreferencesKey(), "png");
-  }
-
-  public String getCurrentFormat() {
-    return getPreferenceValue();
-  }
-
-  public String[] getFormats() {
-    return formats;
   }
 }

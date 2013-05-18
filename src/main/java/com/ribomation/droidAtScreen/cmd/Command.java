@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,12 +46,10 @@ public abstract class Command extends AbstractAction implements
   }
 
   @Override
-  public void connected(AndroidDevice dev) {
-  }
+  public void connected(AndroidDevice dev) {}
 
   @Override
-  public void disconnected(AndroidDevice dev) {
-  }
+  public void disconnected(AndroidDevice dev) {}
 
   protected abstract void doExecute(Application app);
 
@@ -74,6 +71,7 @@ public abstract class Command extends AbstractAction implements
     execute();
   }
 
+  @SuppressWarnings("unchecked")
   public static <CmdType extends Command> CmdType find(
       Class<? extends Command> cmdCls) {
     String name = extractName(cmdCls);

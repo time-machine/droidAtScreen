@@ -9,10 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class FrameRateCommand extends Command {
-  private Integer[] updatesPerMinute = {1, 15, 30, 60, 100};
-
   public FrameRateCommand() {
-    updateView(getRate());
+    updateView(getApplication().getSettings().getFrameRate());
     setTooltip("Sets the rate of how many screen-shots should be taken per " +
         "second");
     setIcon("rate");
@@ -44,14 +42,14 @@ public class FrameRateCommand extends Command {
       public void actionPerformed(ActionEvent e) {
         int rate = Integer.parseInt(e.getActionCommand());
         dialog.dispose();
-        setPreferenceValue(rate);
+        getApplication().getSettings().setFrameRate(rate);
         updateView(rate);
-        getApplication().setFrameRate(rate);
+        getApplication().setFrameRate(rate); // todo: fix this
       }
     };
 
     ButtonGroup group = new ButtonGroup();
-    for (int count : updatesPerMinute) {
+    for (int count : getApplication().getSettings().getFrameRates()) {
       JRadioButton rb = createButton(count, action);
       group.add(rb);
       panel.add(rb);
@@ -66,27 +64,10 @@ public class FrameRateCommand extends Command {
     JRadioButton r = new JRadioButton(numUpdates == 100 ? "Fastest" : lbl);
     r.setActionCommand(lbl);
     r.addActionListener(action);
-    if (numUpdates == getPreferenceValue()) {
+    if (numUpdates == getApplication().getSettings().getFrameRate()) {
       r.setSelected(true);
     }
 
     return r;
-  }
-
-  protected String getPreferencesKey() {
-    return "frame-rate";
-  }
-
-  protected void setPreferenceValue(int value) {
-    getApplication().getPreferences().putInt(getPreferencesKey(), value);
-    getApplication().savePreferences();
-  }
-
-  protected int getPreferenceValue() {
-    return getApplication().getPreferences().getInt(getPreferencesKey(), 60);
-  }
-
-  public int getRate() {
-    return getPreferenceValue();
   }
 }

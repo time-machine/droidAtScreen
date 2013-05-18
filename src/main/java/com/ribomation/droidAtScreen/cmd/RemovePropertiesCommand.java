@@ -18,7 +18,7 @@ public class RemovePropertiesCommand extends Command {
         "application from this host?", "Remove app properties?",
         JOptionPane.YES_NO_OPTION);
     if (rc == JOptionPane.YES_OPTION) {
-      app.destroyPreferences();
+      app.getSettings().destroyPreferences();
     }
   }
 }

@@ -41,17 +41,17 @@ public class DeviceFrame extends JFrame {
   private AffineTransform scaleTX;
   private AffineTransform upsideDownTX;
 
-  public DeviceFrame(Application app, AndroidDevice device, boolean portrait,
+  public DeviceFrame(Application app, AndroidDevice device, boolean landscape,
       boolean upsideDown, int scalePercentage, int frameRate) {
     this.app = app;
     this.device = device;
     this.log = Logger.getLogger(DeviceFrame.class.getName() + ":" +
         device.getName());
-    log.debug(String.format("DeviceFrame(device=%s, portrait=%s, " +
-        "upsideDown=%s, scalePercentage=%d, frameRate=%d)", device, portrait,
+    log.debug(String.format("DeviceFrame(device=%s, landscape=%s, " +
+        "upsideDown=%s, scalePercentage=%d, frameRate=%d)", device, landscape,
         upsideDown, scalePercentage, frameRate));
 
-    setLandscapeMode(!portrait);
+    setLandscapeMode(landscape);
     setScale(scalePercentage);
     setFrameRate(frameRate);
     setUpsideDown(upsideDown);
@@ -95,7 +95,7 @@ public class DeviceFrame extends JFrame {
       log.debug("setVisibleEnabled: HIDING");
       super.setVisible(false);
     } else if (!isVisible()) {
-      int rate = Command.<FrameRateCommand>find(FrameRateCommand.class).getRate();
+      int rate = app.getSettings().getFrameRate();
       setFrameRate(rate);
     }
   }

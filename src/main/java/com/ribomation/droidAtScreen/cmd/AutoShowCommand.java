@@ -12,11 +12,15 @@ public class AutoShowCommand extends CheckBoxCommand {
 
   @Override
   protected void notifyApplication(Application app, boolean selected) {
-    app.setAutoShow(selected);
   }
 
   @Override
-  protected String getPreferencesKey() {
-    return "auto-show";
+  protected boolean getPreferenceValue() {
+    return getApplication().getSettings().isAutoShow();
+  }
+
+  @Override
+  protected void setPreferenceValue(boolean value) {
+    getApplication().getSettings().setAutoShow(value);
   }
 }
