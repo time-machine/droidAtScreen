@@ -30,18 +30,9 @@ public class AdbExePathCommand extends Command {
     return pane;
   }
 
-  private JTextArea createInfoPane() {
-    JTextArea infoPane = new JTextArea();
-    infoPane.setEditable(false);
-    infoPane.setColumns(50);
-    infoPane.setRows(4);
-    infoPane.setLineWrap(true);
-    infoPane.setText("In order to establish a connection to a device, this " +
-        "application uses the Android Debug Bridge (ADB). If ADB is not " +
-        "running when this program launches, it will start ADB. For this to " +
-        "work, it needs the full path to the ADB executable. Please, provide " +
-        "it below.");
-    return infoPane;
+  private JLabel createInfoPane() {
+    JLabel txt = new JLabel(loadResource("/adb-exe-info.html"));
+    return txt;
   }
 
   private JPanel createPathPane() {

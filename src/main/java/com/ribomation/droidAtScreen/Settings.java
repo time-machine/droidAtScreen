@@ -79,7 +79,11 @@ public class Settings {
   }
 
   public boolean isAskBeforeQuit() {
-    return applicationPreferences.getBoolean("askBeforeQuit", true);
+    try {
+      return applicationPreferences.getBoolean("askBeforeQuit", true);
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   public void setAskBeforeQuit(boolean value) {
