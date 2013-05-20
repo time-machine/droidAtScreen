@@ -45,9 +45,15 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
       ScreenImage image = new ScreenImage(rawImage);
 
       return image;
-    } catch (Exception e) {
+    } catch (IOException e) {
       log.error("Failed to get screenshot: " + e);
       throw new RuntimeException("Failed to get screenshot", e);
+    } catch (TimeoutException e) {
+      log.warn("Got timeout");
+      return null;
+    } catch (AdbCommandRejectedException e) {
+      log.error("ADB command rejected: OFFLINE = " + e.isDeviceOffline());
+      throw new RuntimeException(e);
     }
   }
 

@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.Settings;
 import com.ribomation.droidAtScreen.dev.AndroidDevice;
 import com.ribomation.droidAtScreen.dev.ScreenImage;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
@@ -15,7 +16,6 @@ import java.util.Arrays;
  * Takes a screen-shot of the current device image.
  */
 public class ScreenShotCommand extends Command {
-  private File lastDir = null;
   private int count = 1;
 
   public ScreenShotCommand() {
@@ -31,37 +31,44 @@ public class ScreenShotCommand extends Command {
     final DeviceFrame device = app.getSelectedDevice();
     if (device == null) return;
 
+    final Settings settings = app.getSettings();
+
     File suggestedFile = new File(String.format("droidAtScreen-%d.%s", count++,
-        app.getSettings().getImageFormat().toLowerCase()));
+        settings.getImageFormat().toLowerCase()));
 
-    final JFileChooser chooser = new JFileChooser(lastDir);
-    chooser.setCurrentDirectory(null);
-    chooser.setSelectedFile(suggestedFile);
-    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-    chooser.addChoosableFileFilter(new FileNameExtensionFilter("Image Files",
-        app.getSettings().getImageFormats()));
+    if (settings.isAskBeforeScreenshot()) {
+      final JFileChooser chooser = new JFileChooser();
+      chooser.setCurrentDirectory(settings.getImageDirectory());
+      chooser.setSelectedFile(suggestedFile);
+      chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+      chooser.addChoosableFileFilter(new FileNameExtensionFilter("Image Files",
+          settings.getImageFormats()));
 
-    int rc = chooser.showSaveDialog(app.getAppFrame());
-    if (rc != JFileChooser.APPROVE_OPTION) return;
+      int rc = chooser.showSaveDialog(app.getAppFrame());
+      if (rc != JFileChooser.APPROVE_OPTION) return;
 
-    final File imageFile = chooser.getSelectedFile();
-    lastDir = imageFile.getParentFile();
+      suggestedFile = chooser.getSelectedFile();
+    }
+
+    if (suggestedFile.exists()) {
+      int rc = JOptionPane.showConfirmDialog(app.getAppFrame(),
+          "File '" + suggestedFile +
+          "' already exist. Do you want to overwrite?",
+          "Overwrite file", JOptionPane.YES_NO_OPTION);
+      if (rc != JOptionPane.YES_OPTION) return;
+    }
+
+    final File imageFile = suggestedFile;
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         try {
-          if (imageFile.exists()) {
-            int rc = JOptionPane.showConfirmDialog(app.getAppFrame(),
-                "File '" + imageFile +
-                "' already exist. Do you want to overwrite?",
-                "Overwrite file", JOptionPane.YES_OPTION);
-            if (rc != JOptionPane.YES_OPTION) return;
-          }
-
           ScreenImage screenShot = device.getLastScreenshot();
           ImageIO.write(screenShot.toBufferedImage(), getFormat(imageFile),
               imageFile);
+          app.getAppFrame().getStatusBar().message("Written",
+              imageFile.getAbsolutePath());
         } catch (Exception e) {
           JOptionPane.showMessageDialog(app.getAppFrame(),
               "Failed to save file " + imageFile + ". " + e.getMessage(),
@@ -74,8 +81,7 @@ public class ScreenShotCommand extends Command {
         final int dot = name.lastIndexOf('.');
         if (dot > 0) {
           String ext = name.substring(dot + 1).toUpperCase();
-          if (Arrays.asList(
-              app.getSettings().getImageFormats()).contains(ext)) {
+          if (Arrays.asList(settings.getImageFormats()).contains(ext)) {
             return ext;
           }
         }

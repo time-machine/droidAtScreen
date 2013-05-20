@@ -1,16 +1,15 @@
 package com.ribomation.droidAtScreen.dev;
 
 import com.android.ddmlib.AndroidDebugBridge;
-import com.android.ddmlib.Client;
 import com.android.ddmlib.IDevice;
 import com.ribomation.droidAtScreen.Application;
-import com.ribomation.droidAtScreen.DroidAtScreenApplication;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A facade to AndroidDebugBridge.
@@ -62,7 +61,7 @@ public class AndroidDeviceManager extends Thread implements
 
     try {
       AndroidDebugBridge.createBridge(getAdbExecutable().getCanonicalPath(),
-          false);
+          true);
       log.info("Connected to ADB via " + getSocketAddress());
     } catch (IOException e) {
       throw new RuntimeException("Failed to create the absolute path to the " +

@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.Settings;
 import com.ribomation.droidAtScreen.dev.RecordingListener;
 import com.ribomation.droidAtScreen.dev.ScreenImage;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
@@ -19,9 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Records a series of screen-shots into an AVI video clip.
  */
-public class VideoCommand extends Command implements Runnable,
-    RecordingListener {
-  private File lastDir;
+public class VideoCommand extends Command implements RecordingListener {
   private AtomicInteger count = new AtomicInteger(1);
   private AtomicBoolean capturing = new AtomicBoolean(false);
   private BlockingQueue<ScreenImage> imageQueue =
@@ -47,88 +46,98 @@ public class VideoCommand extends Command implements Runnable,
       return;
     }
 
-    JFileChooser chooser = new JFileChooser();
-    chooser.setCurrentDirectory(lastDir);
-    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    chooser.setDialogTitle("Select target directory for the images");
-    chooser.setApproveButtonText("Images Dir");
-    chooser.setApproveButtonToolTipText("All screen-shots will go into this " +
-        "directory, sequentially numbered.");
+    final Settings settings = app.getSettings();
 
-    int rc = chooser.showOpenDialog(app.getAppFrame());
-    if (rc != JFileChooser.APPROVE_OPTION) return;
+    File imageDir = new File(".");
+    if (settings.isAskBeforeScreenshot()) {
+      JFileChooser chooser = new JFileChooser();
+      chooser.setCurrentDirectory(settings.getImageDirectory());
+      chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      chooser.setDialogTitle("Select target directory for the images");
+      chooser.setApproveButtonText("Images Dir");
+      chooser.setApproveButtonToolTipText("All screen-shots will go into this " +
+          "directory, sequentially numbered.");
 
-    File dir = chooser.getSelectedFile();
-    if (!(dir.isAbsolute() && dir.canWrite())) {
-      JOptionPane.showMessageDialog(app.getAppFrame(),
-          "Not a writable directory " + dir, "Invalid directory",
-          JOptionPane.ERROR_MESSAGE);
-      return;
+      int rc = chooser.showOpenDialog(app.getAppFrame());
+      if (rc != JFileChooser.APPROVE_OPTION) return;
+
+      imageDir = chooser.getSelectedFile();
+      if (!(imageDir.isAbsolute() && imageDir.canWrite())) {
+        JOptionPane.showMessageDialog(app.getAppFrame(),
+            "Not a writable directory " + imageDir, "Invalid directory",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
     }
 
-    boolean notEmpty = dir.listFiles(new FileFilter() {
+    boolean notEmpty = imageDir.listFiles(new FileFilter() {
       public boolean accept(File f) {
         return f.isFile();
       }
     }).length > 0;
     if (notEmpty) {
-      rc = JOptionPane.showConfirmDialog(app.getAppFrame(),
+      int rc = JOptionPane.showConfirmDialog(app.getAppFrame(),
           "The chosen directory is not empty. \n" + "Do you still want to " +
           "proceed and possibly \noverwrite some/all of the previously saved" +
           "screen-shots?", "Not empty directory", JOptionPane.YES_NO_OPTION);
       if (rc != JOptionPane.YES_OPTION) return;
     }
 
-    lastDir = dir;
+    final File destinationDir = imageDir;
+    Runnable task = new Runnable() {
+      @Override
+      public void run() {
+        try {
+          while (capturing.get()) {
+            ScreenImage image = imageQueue.take();
+            String format = getApplication().getSettings().getImageFormat();
+            File file = new File(destinationDir,
+                String.format("droidAtScreen-%d.%s", count.getAndIncrement(),
+                format.toLowerCase()));
+            ImageIO.write(image.toBufferedImage(), format, file);
+            getLog().debug("written " + file);
+          }
+        } catch (InterruptedException ignore) {
+          return;
+        } catch (IOException e) {
+          getLog().error("Failed to write image to " + destinationDir, e);
+          return;
+        } finally {
+          getLog().info("Countinuous screen capture recording stopped, count = " +
+              count.get());
+          capturing.set(false);
+          imageQueue.clear();
+          final int oldCount = count.getAndSet(1) - 1;
+          runner = null;
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              setIcon("record");
+              getApplication().getAppFrame().getStatusBar().message(
+                  "Recording stopped. %d images saved.", oldCount);
+            }
+          });
+        }
+      }
+    };
+
     setIcon("recording");
     imageQueue.clear();
     capturing.set(true);
     count.set(1);
-    runner = new Thread(this);
+    runner = new Thread(task);
     runner.start();
     device.setRecordingListener(this);
     getLog().info("Countinuous screen capture recording started, dir = " +
-        lastDir.getAbsolutePath());
+        imageDir.getAbsolutePath());
     app.getAppFrame().getStatusBar().message("Recording to %s",
-        truncate(lastDir.getAbsolutePath(), 30));
+        truncate(imageDir.getAbsolutePath(), 30));
   }
 
   public void record(ScreenImage image) {
     try {
       imageQueue.put(image);
     } catch (InterruptedException ignore) {}
-  }
-
-  public void run() {
-    try {
-      while (capturing.get()) {
-        ScreenImage image = imageQueue.take();
-        String format = getApplication().getSettings().getImageFormat();
-        File file = new File(lastDir, String.format("droidAtScreen-%d.%s",
-            count.getAndIncrement(), format.toLowerCase()));
-        ImageIO.write(image.toBufferedImage(), format, file);
-        getLog().debug("written " + file);
-      }
-    } catch (InterruptedException ignore) {
-      return;
-    } catch (IOException e) {
-      getLog().error("Failed to write image to " + lastDir, e);
-    } finally {
-      getLog().info("Countinuous screen capture recording stopped, count = " +
-          count.get());
-      capturing.set(false);
-      imageQueue.clear();
-      final int oldCount = count.getAndSet(1) - 1;
-      runner = null;
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          setIcon("record");
-          getApplication().getAppFrame().getStatusBar().message(
-              "Recording stopped. %d images saved.", oldCount);
-        }
-      });
-    }
   }
 
   private String truncate(String s, int max) {
