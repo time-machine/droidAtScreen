@@ -5,7 +5,7 @@ import com.ribomation.droidAtScreen.Application;
 public class SkipEmulatorCommand extends CheckBoxCommand {
   public SkipEmulatorCommand() {
     setLabel("Skip Emulators");
-    setTooltip("Show new devices immediately");
+    setTooltip("Do not show emulators");
   }
 
   @Override

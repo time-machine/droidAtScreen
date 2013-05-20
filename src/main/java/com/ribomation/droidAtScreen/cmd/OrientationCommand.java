@@ -7,6 +7,7 @@ import javax.swing.*;
 /**
  * Flips the device frame orientation.
  */
+@Deprecated
 public class OrientationCommand extends CheckBoxCommand {
   public OrientationCommand() {
     updateView(getPreferenceValue());

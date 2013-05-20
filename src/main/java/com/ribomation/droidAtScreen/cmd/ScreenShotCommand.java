@@ -15,6 +15,7 @@ import java.util.Arrays;
 /**
  * Takes a screen-shot of the current device image.
  */
+@Deprecated
 public class ScreenShotCommand extends Command {
   private int count = 1;
 

@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 /**
  * Set the device frame projection scale, as a percentage.
  */
+@Deprecated
 public class ScaleCommand extends Command {
   public ScaleCommand() {
     int scale = getApplication().getSettings().getScale();

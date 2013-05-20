@@ -5,6 +5,7 @@ import com.ribomation.droidAtScreen.Application;
 /**
  * Applies one or more transformations of the device image.
  */
+@Deprecated
 public class UpsideDownCommand extends CheckBoxCommand {
   public UpsideDownCommand() {
     setLabel("Upside-Down");

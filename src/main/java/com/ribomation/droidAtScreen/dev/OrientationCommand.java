@@ -12,29 +12,19 @@ import javax.swing.*;
 public class OrientationCommand extends CommandWithTarget<DeviceFrame> {
   public OrientationCommand(DeviceFrame deviceFrame) {
     super(deviceFrame);
-    updateLabelAndIcon(deviceFrame);
-    setTooltip("Flip the orientation (portrait | landscape)");
+    updateButton(deviceFrame);
   }
 
   @Override
-  protected void doExecute(Application app) {
-    DeviceFrame deviceFrame = getTarget();
+  protected void doExecute(Application app, DeviceFrame deviceFrame) {
     deviceFrame.setLandscapeMode(!deviceFrame.isLandscapeMode());
-    updateLabelAndIcon(deviceFrame);
+    updateButton(deviceFrame);
     deviceFrame.validate();
   }
 
-  private void updateLabelAndIcon(DeviceFrame deviceFrame) {
-    setLabel(deviceFrame.isLandscapeMode() ? "Landscape" : "Portrait");
-    setIcon("orientation-" + getLabel().toLowerCase().trim());
-  }
-
-  @Override
-  public AbstractButton newButton() {
-    JToggleButton b = new JToggleButton(this);
-    b.setVerticalTextPosition(AbstractButton.BOTTOM);
-    b.setHorizontalTextPosition(AbstractButton.CENTER);
-    b.setSelected(true);
-    return b;
+  private void updateButton(DeviceFrame deviceFrame) {
+    String orientation = deviceFrame.isLandscapeMode() ? "Landscape" : "Portrait";
+    setTooltip(String.format("Flip the orientation (%s)", orientation));
+    setIcon("orientation-" + orientation.toLowerCase().trim());
   }
 }

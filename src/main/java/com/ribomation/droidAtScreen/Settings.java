@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -15,11 +16,16 @@ public class Settings {
   private final Preferences applicationPreferences;
   private final Logger log;
   private PropertyChangeSupport propSupport;
+  private final AtomicInteger next = new AtomicInteger(1);
 
   public Settings() {
     applicationPreferences = Preferences.userNodeForPackage(Settings.class);
     log = Logger.getLogger(Settings.class);
     propSupport = new PropertyChangeSupport(this);
+  }
+
+  public int nextInt() {
+    return next.getAndIncrement();
   }
 
   public void addListener(String name, PropertyChangeListener listener) {
