@@ -54,7 +54,6 @@ public class DroidAtScreenApplication implements Application,
       try {
         appProperties = new Properties();
         appProperties.load(is);
-        appVersion = prp.getProperty("version", appVersion);
       } catch (IOException e) {
         log.debug("Missing classpath resource: /app.properties", e);
       }
@@ -188,7 +187,38 @@ public class DroidAtScreenApplication implements Application,
     return deviceManager;
   }
 
-  // TODO: -
+  public ApplicationFrame getAppFrame() {
+    return appFrame;
+  }
+
+  public Settings getSettings() {
+    return settings;
+  }
+
+  @Override
+  public Info getInfo() {
+    return new Info() {
+      @Override
+      public String getName() {
+        return appProperties.getProperty("app.name", "no-name");
+      }
+
+      @Override
+      public String getVersion() {
+        return appProperties.getProperty("app.version", "0.0");
+      }
+
+      @Override
+      public Date getBuildDate() {
+        try {
+          return new SimpleDateFormat("yyyy-MM-dd").parse(
+              appProperties.getProperty("build.date", "2011-01-01"));
+        } catch (ParseException e) {
+          return new Date();
+        }
+      }
+    };
+  }
 
   // --------------------------------------------
   // AndroidDeviceListener
@@ -213,22 +243,6 @@ public class DroidAtScreenApplication implements Application,
   // --------------------------------------------
   // Application
   // --------------------------------------------
-  public String getName() {
-    return appName;
-  }
-
-  public String getVersion() {
-    return appVersion;
-  }
-
-  public ApplicationFrame getAppFrame() {
-    return appFrame;
-  }
-
-  public Settings getSettings() {
-    return settings;
-  }
-
   @Override
   public void setSkipEmulator(boolean value) {
     log.debug("setSkipEmulator: " + value);

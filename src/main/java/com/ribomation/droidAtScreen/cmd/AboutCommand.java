@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.Info;
 import com.ribomation.droidAtScreen.gui.GuiUtil;
 
 import javax.swing.*;
@@ -19,12 +20,13 @@ public class AboutCommand extends Command {
 
   @Override
   protected void doExecute(Application app) {
+    Info info = app.getInfo();
     JPanel content = new JPanel(new BorderLayout(5, 0));
     content.add(new JLabel(GuiUtil.loadIcon("about")), BorderLayout.WEST);
     content.add(new JLabel("<html>" + systemInfo()), BorderLayout.CENTER);
 
-    JOptionPane.showMessageDialog(null, content, app.getName() + " - Version " +
-        app.getVersion(), JOptionPane.PLAIN_MESSAGE);
+    JOptionPane.showMessageDialog(null, content, info.getName() +
+        " - Version " + info.getVersion(), JOptionPane.PLAIN_MESSAGE);
   }
 
   private String systemInfo() {

@@ -14,7 +14,7 @@ import java.awt.event.WindowEvent;
 
 public class ApplicationFrame extends JFrame {
   private Logger log = Logger.getLogger(ApplicationFrame.class);
-  private Application application;
+  private Application app;
   private DefaultComboBoxModel deviceListModel = new DefaultComboBoxModel();
   private StatusBar statusBar;
 
@@ -27,25 +27,10 @@ public class ApplicationFrame extends JFrame {
       "AutoShow", "SkipEmulator", "AskBeforeQuit", "-", "AdbExePath", "-",
       "LookAndFeel", "-", "RemoveProperties"};
 
-  public ApplicationFrame() throws HeadlessException {
-    super();
+  public ApplicationFrame(Application app) throws HeadlessException {
+    this.app = app;
   }
 
-  public ApplicationFrame(Application application) throws HeadlessException {
-    this.application = application;
-  }
-
-  public Application getApplication() {
-    if (application == null) {
-      throw new IllegalStateException("Missing application ref. Must invoke" +
-          "setApplication(...) before use.");
-    }
-    return application;
-  }
-
-  public void setApplication(Application application) {
-    this.application = application;
-  }
   public StatusBar getStatusBar() {
     return statusBar;
   }
@@ -56,8 +41,8 @@ public class ApplicationFrame extends JFrame {
 
   public void initGUI() {
     setIconImage(GuiUtil.loadIcon("device").getImage());
-    setTitle(getApplication().getName() + ", Version " +
-        getApplication().getVersion());
+    setTitle(app.getInfo().getName() + ", Version " +
+        app.getInfo().getVersion());
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     addWindowListener(new WindowAdapter() {
       @Override
@@ -68,7 +53,7 @@ public class ApplicationFrame extends JFrame {
     setJMenuBar(createMenubar());
     add(GuiUtil.createToolbar(TOOLBAR), BorderLayout.NORTH);
     add(createDeviceControlPane(), BorderLayout.CENTER);
-    add(statusBar = new StatusBar(application), BorderLayout.SOUTH);
+    add(statusBar = new StatusBar(app), BorderLayout.SOUTH);
     pack();
     setLocationByPlatform(true);
   }
@@ -92,7 +77,7 @@ public class ApplicationFrame extends JFrame {
     JComboBox devices = new JComboBox(deviceListModel);
     devices.setPreferredSize(new Dimension(200, 20));
 
-    getApplication().addAndroidDeviceListener(new AndroidDeviceListener() {
+    app.addAndroidDeviceListener(new AndroidDeviceListener() {
       @Override
       public void connected(AndroidDevice dev) {
         log.debug("[devicesBox] connected: dev = " + dev);
