@@ -28,6 +28,10 @@ public class StatusBar extends JPanel {
     message.setText(txt);
   }
 
+  public void message(String fmt, Object... args) {
+    message(String.format(fmt, args));
+  }
+
   public void clear() {
     message("");
   }
