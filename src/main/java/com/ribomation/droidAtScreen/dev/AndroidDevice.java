@@ -45,15 +45,10 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
       ScreenImage image = new ScreenImage(rawImage);
 
       return image;
-    } catch (TimeoutException e) {
-      log.error("Failed to get screenshot", e);
-    } catch (AdbCommandRejectedException e) {
-      log.error("Failed to get screenshot", e);
-    } catch (IOException e) {
-      log.error("Failed to get screenshot", e);
+    } catch (Exception e) {
+      log.error("Failed to get screenshot: " + e);
+      throw new RuntimeException("Failed to get screenshot", e);
     }
-
-    return null;
   }
 
   public long getAverageTimings() {

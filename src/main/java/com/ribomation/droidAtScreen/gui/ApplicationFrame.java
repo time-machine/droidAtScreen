@@ -12,6 +12,9 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+/**
+ * The main GUI window.
+ */
 public class ApplicationFrame extends JFrame {
   private Logger log = Logger.getLogger(ApplicationFrame.class);
   private Application app;
@@ -19,13 +22,15 @@ public class ApplicationFrame extends JFrame {
   private StatusBar statusBar;
 
   private final String[] TOOLBAR = {"Orientation", "Scale", "-", "ScreenShot",
-      "Video", "-", "Quit"};
+      "Video", "-", "AdbRestart"};
   private final String[] FILE_MENU = {"ScreenShot", "Video", "-", "Quit"};
   private final String[] VIEW_MENU = {"Orientation", "Scale", "UpsideDown"};
+  private final String[] ADB_MENU = {"AdbRestart", "AdbReloadDevices",
+      "AdbExePath"};
   private final String[] HELP_MENU = {"About"};
   private final String[] OPTIONS_MENU = {"ImageFormat", "FrameRate", "-",
-      "AutoShow", "SkipEmulator", "AskBeforeQuit", "-", "AdbExePath", "-",
-      "LookAndFeel", "-", "RemoveProperties"};
+      "AutoShow", "SkipEmulator", "AskBeforeQuit", "-", "LookAndFeel", "-",
+      "RemoveProperties"};
 
   public ApplicationFrame(Application app) throws HeadlessException {
     this.app = app;
@@ -62,6 +67,7 @@ public class ApplicationFrame extends JFrame {
     JMenuBar mb = new JMenuBar();
     mb.add(GuiUtil.createMenu("File", 'F', FILE_MENU));
     mb.add(GuiUtil.createMenu("View", 'V', VIEW_MENU));
+    mb.add(GuiUtil.createMenu("ADB", 'A', ADB_MENU));
     mb.add(GuiUtil.createMenu("Options", 'O', OPTIONS_MENU));
     mb.add(GuiUtil.createMenu("Help", 'H', HELP_MENU));
     return mb;
