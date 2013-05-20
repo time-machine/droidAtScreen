@@ -18,8 +18,6 @@ import java.util.prefs.Preferences;
  */
 public interface Application {
   ApplicationFrame getAppFrame();
-  String getName();
-  String getVersion();
   void addAndroidDeviceListener(AndroidDeviceListener listener);
   void setScale(int percentage);
   void setAutoShow(boolean show);
@@ -45,4 +43,5 @@ public interface Application {
   Settings getSettings();
 
   AndroidDeviceManager getDeviceManager();
+  Info getInfo();
 }

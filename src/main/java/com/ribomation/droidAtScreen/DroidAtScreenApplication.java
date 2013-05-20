@@ -12,6 +12,8 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -22,16 +24,13 @@ import java.util.prefs.Preferences;
 public class DroidAtScreenApplication implements Application,
     AndroidDeviceListener {
   private Logger log = Logger.getLogger(DroidAtScreenApplication.class);
-  private final String appPropertiesPath = "/META-INF/maven/com.ribomation/" +
-      "droidAtScreen/pom.properties";
-  private String appName = "Droid@Screen";
-  private String appVersion = "0.1";
   private AndroidDeviceManager deviceManager;
   private ApplicationFrame appFrame;
   private Map<String, DeviceFrame> devices = new HashMap<String, DeviceFrame>();
   private List<AndroidDeviceListener> deviceListeners =
       new ArrayList<AndroidDeviceListener>();
   private Settings settings;
+  private Properties appProperties;
 
   public static void main(String[] args) {
     DroidAtScreenApplication app = new DroidAtScreenApplication();
@@ -50,15 +49,14 @@ public class DroidAtScreenApplication implements Application,
 
   private void initProperties() {
     log.debug("initProperties");
-    InputStream is = this.getClass().getResourceAsStream(appPropertiesPath);
+    InputStream is = this.getClass().getResourceAsStream("/app.properties");
     if (is != null) {
       try {
-        Properties prp = new Properties();
-        prp.load(is);
+        appProperties = new Properties();
+        appProperties.load(is);
         appVersion = prp.getProperty("version", appVersion);
-      }
-      catch (IOException e) {
-        log.debug("Missing classpath resource: " + appPropertiesPath, e);
+      } catch (IOException e) {
+        log.debug("Missing classpath resource: /app.properties", e);
       }
     }
 
@@ -189,6 +187,8 @@ public class DroidAtScreenApplication implements Application,
   public AndroidDeviceManager getDeviceManager() {
     return deviceManager;
   }
+
+  // TODO: -
 
   // --------------------------------------------
   // AndroidDeviceListener
