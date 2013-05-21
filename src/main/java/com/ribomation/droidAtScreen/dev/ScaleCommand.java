@@ -21,7 +21,6 @@ public class ScaleCommand extends CommandWithTarget<DeviceFrame> {
 
   @Override
   protected void doExecute(Application app, final DeviceFrame deviceFrame) {
-    final DeviceFrame deviceFrame = getTarget();
     final JDialog dialog = new JDialog(app.getAppFrame(),
         "Set the Device Frame Scale", true);
 
@@ -45,6 +44,7 @@ public class ScaleCommand extends CommandWithTarget<DeviceFrame> {
     dialog.setVisible(true);
   }
 
+  @Override
   protected void updateButton(DeviceFrame deviceFrame) {
     setTooltip(String.format("Current scale (%d%%)", deviceFrame.getScale()));
   }
