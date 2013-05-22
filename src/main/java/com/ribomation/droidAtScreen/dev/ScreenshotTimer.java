@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Timer that take screenshots from a device.
  */
+@Deprecated
 public class ScreenshotTimer extends TimerTask {
   private static final int MAX_ERRORS = 5;
   private Logger log = Logger.getLogger(ScreenshotTimer.class);
@@ -47,7 +48,6 @@ public class ScreenshotTimer extends TimerTask {
 
     try {
       ScreenImage image = device.getScreenImage();
-      frame.setLastScreenshot(image);
     } catch (Exception e) {
       errCount++;
       log.warn(String.format("Failed to get screenshot (%d): %s", errCount,
@@ -68,7 +68,6 @@ public class ScreenshotTimer extends TimerTask {
               " is offline");
         }
 
-        frame.setVisibleEnabled(false);
         frame.dispose();
       }
     } finally {

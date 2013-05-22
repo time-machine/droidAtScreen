@@ -65,10 +65,6 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
     return sum / timings.size();
   }
 
-  public double getAverageTimingsInSeconds() {
-    return getAverageTimings() / SECS;
-  }
-
   public ConnectionState getState() {
     IDevice.DeviceState s = target.getState();
     if (s == IDevice.DeviceState.ONLINE) return ConnectionState.online;

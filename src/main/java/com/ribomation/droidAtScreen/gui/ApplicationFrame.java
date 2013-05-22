@@ -5,6 +5,7 @@ import com.ribomation.droidAtScreen.cmd.Command;
 import com.ribomation.droidAtScreen.cmd.QuitCommand;
 import com.ribomation.droidAtScreen.dev.AndroidDevice;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
+import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -21,16 +22,16 @@ public class ApplicationFrame extends JFrame {
   private DefaultComboBoxModel deviceListModel = new DefaultComboBoxModel();
   private StatusBar statusBar;
 
-  private final String[] TOOLBAR = {"ImageDirectory", "Video", "-", "About"};
+  private final String[] TOOLBAR = {"ImageDirectory", "-", "AdbRestart",
+      "AdbReloadDevices", "-", "About"};
   private final String[] FILE_MENU = {"Quit"};
   private final String[] IMAGE_MENU = {"ImageDirectory", "ImageFormat",
-      "AskBeforeScreenshot", "-", "Video"};
+      "AskBeforeScreenshot", "-"};
   private final String[] VIEW_MENU = {"UpsideDown"};
   private final String[] ADB_MENU = {"AdbRestart", "AdbReloadDevices",
       "AdbExePath"};
-  private final String[] OPTIONS_MENU = {"FrameRate", "-", "AutoShow",
-      "SkipEmulator", "AskBeforeQuit", "-", "LookAndFeel", "-",
-      "RemoveProperties"};
+  private final String[] OPTIONS_MENU = {"AutoShow", "SkipEmulator",
+      "AskBeforeQuit", "-", "LookAndFeel", "-", "RemoveProperties"};
   private final String[] HELP_MENU = {"About"};
 
   public ApplicationFrame(Application app) throws HeadlessException {

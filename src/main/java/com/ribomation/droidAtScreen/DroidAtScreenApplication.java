@@ -149,12 +149,11 @@ public class DroidAtScreenApplication implements Application,
 
   public void addDevice(AndroidDevice dev) {
     getAppFrame().getStatusBar().message("Connected to " + dev.getName());
-    DeviceFrame frame = new DeviceFrame(this, dev, getSettings().isLandscape(),
-        getSettings().isUpsideDown(), getSettings().getScale(),
-        getSettings().getFrameRate());
+    DeviceFrame frame = new DeviceFrame(this, dev);
     devices.put(frame.getName(), frame);
     fireDeviceConnected(dev);
-    frame.setVisibleEnabled(true);
+    frame.setLocationByPlatform(true);
+    frame.setVisible(true);
   }
 
   public void removeDevice(AndroidDevice dev) {
@@ -162,7 +161,7 @@ public class DroidAtScreenApplication implements Application,
     fireDeviceDisconnected(dev);
     DeviceFrame frame = devices.remove(dev.getName());
     if (frame == null) return;
-    frame.setVisibleEnabled(false);
+    frame.setVisible(false);
     frame.dispose();
   }
 
@@ -254,14 +253,9 @@ public class DroidAtScreenApplication implements Application,
   }
 
   @Override
+  @Deprecated
   public void setLandscapeMode(boolean value) {
     log.debug("setLandscapeMode: " + value);
-    DeviceFrame selectedDevice = getSelectedDevice();
-    if (selectedDevice != null) {
-      selectedDevice.setLandscapeMode(value);
-    } else {
-      getAppFrame().getStatusBar().message("No device");
-    }
   }
 
   @Override
@@ -276,24 +270,14 @@ public class DroidAtScreenApplication implements Application,
   }
 
   @Override
+  @Deprecated
   public void setFrameRate(int value) {
     log.debug("setFrameRate: " + value);
-    DeviceFrame selectedDevice = getSelectedDevice();
-    if (selectedDevice != null) {
-      selectedDevice.setFrameRate(value);
-    } else {
-      getAppFrame().getStatusBar().message("No device");
-    }
   }
 
   @Override
+  @Deprecated
   public void setScale(int value) {
     log.debug("setScale: " + value);
-    DeviceFrame selectedDevice = getSelectedDevice();
-    if (selectedDevice != null) {
-      selectedDevice.setScale(value);
-    } else {
-      getAppFrame().getStatusBar().message("No device");
-    }
   }
 }
