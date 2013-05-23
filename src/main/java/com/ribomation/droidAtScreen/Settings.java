@@ -135,33 +135,12 @@ public class Settings {
     set("askBeforeScreenshot", value);
   }
 
-  private static final Integer[] scales = {25, 50, 75, 100, 125, 150, 175, 200,
-      250, 300};
-
-  public Integer[] getScales() {
-    return scales;
-  }
-
-  public int getScale() {
+  public int getPreferredScale() {
     return applicationPreferences.getInt("scale", 100);
   }
 
-  public void setScale(int value) {
+  public void setPreferredScale(int value) {
     set("scale", value);
-  }
-
-  private static final Integer[] updatesPerMinute = {1, 15, 30, 60, 100};
-
-  public Integer[] getFrameRates() {
-    return updatesPerMinute;
-  }
-
-  public int getFrameRate() {
-    return applicationPreferences.getInt("frameRate", 60);
-  }
-
-  public void setFrameRate(int value) {
-    set("frameRate", value);
   }
 
   public boolean isHideEmulators() {

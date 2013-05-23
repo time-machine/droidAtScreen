@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen.gui;
 
 import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.Settings;
 import com.ribomation.droidAtScreen.cmd.*;
 import com.ribomation.droidAtScreen.dev.*;
 import org.apache.log4j.Logger;
@@ -47,6 +48,11 @@ public class DeviceFrame extends JFrame {
         device.getName());
     log.debug(String.format("DeviceFrame(device=%s)", device));
 
+    Settings cfg = app.getSettings();
+    setScale(cfg.getPreferredScale());
+    setLandscapeMode(cfg.isLandscape());
+    setUpsideDown(cfg.isUpsideDown());
+
     setTitle(device.getName());
     setIconImage(GuiUtil.loadIcon("device").getImage());
     setResizable(false);
@@ -66,13 +72,8 @@ public class DeviceFrame extends JFrame {
       }
     });
 
-    setLandscapeMode(landscapeMode);
-    setScale(scalePercentage);
-    setUpsideDown(upsideDown);
-
-    retriever = new Retriever();
     timer = new Timer("Screenshot Timer");
-    timer.schedule(retriever, 0, 500);
+    timer.schedule(retriever = new Retriever(), 0, 500);
     pack();
   }
 
@@ -175,7 +176,8 @@ public class DeviceFrame extends JFrame {
       infoPane.setElapsed(elapsed, image);
       infoPane.setStatus(device.getState().name().toUpperCase());
 
-      log.debug(String.format("Got screenshot, elapsed %d ms", elapsed));
+      log.debug(String.format("Got screenshot %s, elapsed %d ms", image,
+          elapsed));
       log.debug(device.getProperties());
 
       boolean fresh = canvas.getScreenshot() == null;
@@ -251,7 +253,6 @@ public class DeviceFrame extends JFrame {
 
   public void setLandscapeMode(boolean landscape) {
     this.landscapeMode = landscape;
-    pack();
   }
 
   public void setScale(int scalePercentage) {
@@ -262,7 +263,6 @@ public class DeviceFrame extends JFrame {
       double scale = scalePercentage / 100.0;
       scaleTX = AffineTransform.getScaleInstance(scale, scale);
     }
-    pack();
   }
 
   public void setUpsideDown(boolean upsideDown) {
@@ -275,7 +275,6 @@ public class DeviceFrame extends JFrame {
     } else {
       upsideDownTX = null;
     }
-    pack();
   }
 
   public void setRecordingListener(RecordingListener recordingListener) {
