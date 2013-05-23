@@ -27,7 +27,6 @@ public class ApplicationFrame extends JFrame {
   private final String[] FILE_MENU = {"Quit"};
   private final String[] IMAGE_MENU = {"ImageDirectory", "ImageFormat",
       "AskBeforeScreenshot", "-"};
-  private final String[] VIEW_MENU = {"UpsideDown"};
   private final String[] ADB_MENU = {"AdbRestart", "AdbReloadDevices",
       "AdbExePath"};
   private final String[] OPTIONS_MENU = {"AutoShow", "SkipEmulator",
@@ -69,7 +68,6 @@ public class ApplicationFrame extends JFrame {
     JMenuBar mb = new JMenuBar();
     mb.add(GuiUtil.createMenu("File", 'F', FILE_MENU));
     mb.add(GuiUtil.createMenu("Image", 'I', IMAGE_MENU));
-    mb.add(GuiUtil.createMenu("View", 'V', VIEW_MENU));
     mb.add(GuiUtil.createMenu("ADB", 'A', ADB_MENU));
     mb.add(GuiUtil.createMenu("Options", 'O', OPTIONS_MENU));
     mb.add(GuiUtil.createMenu("Help", 'H', HELP_MENU));
