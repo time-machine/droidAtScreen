@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Records a series of screen-shots into an AVI video clip.
  */
+@Deprecated
 public class VideoCommand extends Command implements RecordingListener {
   private AtomicInteger count = new AtomicInteger(1);
   private AtomicBoolean capturing = new AtomicBoolean(false);

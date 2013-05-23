@@ -29,7 +29,6 @@ public class DeviceFrame extends JFrame {
   private int scalePercentage = 100;
   private boolean landscapeMode = false;
   private boolean upsideDown = false;
-  private boolean visibleEnabled = false;
 
   private ImageCanvas canvas;
   private JComponent toolBar;
@@ -38,7 +37,7 @@ public class DeviceFrame extends JFrame {
   private RecordingListener recordingListener;
   private Timer timer;
   private TimerTask retriever;
-  private InfoPane info;
+  private InfoPane infoPane;
 
   public DeviceFrame(Application app, AndroidDevice device) {
     this.app = app;
@@ -53,7 +52,7 @@ public class DeviceFrame extends JFrame {
 
     add(canvas = new ImageCanvas(), BorderLayout.CENTER);
     add(toolBar = createToolBar(), BorderLayout.WEST);
-    add(info = new InfoPane(), BorderLayout.SOUTH);
+    add(infoPane = new InfoPane(), BorderLayout.SOUTH);
 
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     addWindowStateListener(new WindowAdapter() {
@@ -85,26 +84,28 @@ public class DeviceFrame extends JFrame {
     buttons.add(new RecordingCommand(this).newButton());
 
     JPanel tb = new JPanel(new FlowLayout());
-    tb.setBorder(BorderFactory.createRaisedBevelBorder());
+    tb.setBorder(BorderFactory.createEmptyBorder());
     tb.add(buttons);
 
     return tb;
   }
 
-  class InfoPane extends JPanel {
+  public class InfoPane extends JPanel {
     JLabel size;
 
     InfoPane() {
       super(new FlowLayout(FlowLayout.CENTER));
       size = new JLabel("No screenshot");
       this.add(size);
-      setBorder(BorderFactory.createRaisedBevelBorder());
+      setBorder(BorderFactory.createEmptyBorder());
     }
 
     void setSizeInfo(ImageCanvas img) {
       Dimension sz = img.getPreferredSize();
       size.setText(String.format("%d x %d", sz.width, sz.height));
     }
+
+    public void setMessage(String msg) {}
   }
 
   class Retriever extends TimerTask {
@@ -115,7 +116,7 @@ public class DeviceFrame extends JFrame {
         if (landscapeMode) image.rotate();
         if (recordingListener != null) recordingListener.record(image);
         canvas.setScreenshot(image);
-        info.setSizeInfo(canvas);
+        infoPane.setSizeInfo(canvas);
       }
       pack();
     }
@@ -176,10 +177,6 @@ public class DeviceFrame extends JFrame {
     }
   }
 
-  public ScreenImage getLastScreenshot() {
-    return canvas.getScreenshot();
-  }
-
   public void setLandscapeMode(boolean landscape) {
     this.landscapeMode = landscape;
     pack();
@@ -206,7 +203,19 @@ public class DeviceFrame extends JFrame {
     } else {
       upsideDownTX = null;
     }
-    invalidate();
+    pack();
+  }
+
+  public void setRecordingListener(RecordingListener recordingListener) {
+    this.recordingListener = recordingListener;
+  }
+
+  public ScreenImage getLastScreenshot() {
+    return canvas.getScreenshot();
+  }
+
+  public InfoPane getInfoPane() {
+    return infoPane;
   }
 
   public AndroidDevice getDevice() {
@@ -215,10 +224,6 @@ public class DeviceFrame extends JFrame {
 
   public String getName() {
     return device.getName();
-  }
-
-  public void setRecordingListener(RecordingListener recordingListener) {
-    this.recordingListener = recordingListener;
   }
 
   public boolean isLandscapeMode() {

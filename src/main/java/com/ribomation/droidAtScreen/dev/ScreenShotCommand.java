@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen.dev;
 
 import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.Settings;
 import com.ribomation.droidAtScreen.cmd.CommandWithTarget;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
 
@@ -9,7 +10,6 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Takes a screen-shot of the current device image.
@@ -18,20 +18,24 @@ public class ScreenShotCommand extends CommandWithTarget<DeviceFrame> {
   public ScreenShotCommand(DeviceFrame target) {
     super(target);
     setIcon("camera");
-    setTooltip("Takes a screen-shot of the current device");
+    setTooltip("Takes a screen-shot and saves it to a file");
   }
 
   @Override
   protected void doExecute(Application app, DeviceFrame device) {
-    JFileChooser chooser = createChooser(app.getSettings().getImageDirectory(),
-        suggestFile(app), app.getSettings().getImageFormats());
-
-    if (chooser.showSaveDialog(app.getAppFrame()) ==
-        JFileChooser.APPROVE_OPTION) {
-      File file = chooser.getSelectedFile();
-      if (!file.exists() || askOverwrite(app, file)) {
-        SwingUtilities.invokeLater(new ImageSaver(app, file, device));
+    if (app.getSettings().isAskBeforeScreenshot()) {
+      JFileChooser chooser = createChooser(app.getSettings().getImageDirectory(),
+          suggestFilename(app), app.getSettings().getImageFormats());
+      if (chooser.showSaveDialog(app.getAppFrame()) ==
+          JFileChooser.APPROVE_OPTION) {
+        File file = chooser.getSelectedFile();
+        if (!file.exists() || askOverwrite(app, file)) {
+          SwingUtilities.invokeLater(new ImageSaver(app, file, device));
+        }
       }
+    } else {
+      SwingUtilities.invokeLater(new ImageSaver(app, suggestFilename(app),
+          device));
     }
   }
 
@@ -51,8 +55,9 @@ public class ScreenShotCommand extends CommandWithTarget<DeviceFrame> {
       try {
         ImageIO.write(device.getLastScreenshot().toBufferedImage(),
             extractFormat(app, file), file);
-        app.getAppFrame().getStatusBar().message("Written",
-            file.getAbsolutePath());
+        app.getAppFrame().getStatusBar().message("Written %s", file.getName());
+        getLog().info(String.format("Screenshot file: %s",
+            file.getAbsolutePath()));
       } catch (Exception e) {
         JOptionPane.showMessageDialog(app.getAppFrame(),
             String.format("Failed to save file '%s': %s", file, e.getMessage()),
@@ -74,10 +79,11 @@ public class ScreenShotCommand extends CommandWithTarget<DeviceFrame> {
     return chooser;
   }
 
-  private File suggestFile(Application app) {
-    return new File(String.format("%s-%d.%s",
-        app.getInfo().getName().toLowerCase(), app.getSettings().nextInt(),
-        app.getSettings().getImageFormat()));
+  private File suggestFilename(Application app) {
+    Settings cfg = app.getSettings();
+    return new File(cfg.getImageDirectory(), String.format("%s-%d.%s",
+        app.getInfo().getName().toLowerCase(), cfg.nextInt(),
+        cfg.getImageFormat().toLowerCase()));
   }
 
   private boolean askOverwrite(Application app, File f) {
