@@ -1,6 +1,7 @@
 package com.ribomation.droidAtScreen.gui;
 
 import com.ribomation.droidAtScreen.Application;
+import com.ribomation.droidAtScreen.cmd.*;
 import com.ribomation.droidAtScreen.dev.*;
 import org.apache.log4j.Logger;
 
@@ -80,7 +81,7 @@ public class DeviceFrame extends JFrame {
     buttons.add(new OrientationCommand(this).newButton());
     buttons.add(new ScaleCommand(this).newButton());
     buttons.add(new UpsideDownCommand(this).newButton());
-    buttons.add(new ScreenShotCommand(this).newButton());
+    buttons.add(new ScreenshotCommand(this).newButton());
     buttons.add(new RecordingCommand(this).newButton());
 
     JPanel tb = new JPanel(new FlowLayout());

@@ -1,4 +1,4 @@
-package com.ribomation.droidAtScreen.dev;
+package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.Settings;
@@ -14,8 +14,8 @@ import java.util.Arrays;
 /**
  * Takes a screen-shot of the current device image.
  */
-public class ScreenShotCommand extends CommandWithTarget<DeviceFrame> {
-  public ScreenShotCommand(DeviceFrame target) {
+public class ScreenshotCommand extends CommandWithTarget<DeviceFrame> {
+  public ScreenshotCommand(DeviceFrame target) {
     super(target);
     setIcon("camera");
     setTooltip("Takes a screen-shot and saves it to a file");

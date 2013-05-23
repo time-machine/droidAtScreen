@@ -1,4 +1,4 @@
-package com.ribomation.droidAtScreen.dev;
+package com.ribomation.droidAtScreen.cmd;
 
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.cmd.CommandWithTarget;
