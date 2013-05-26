@@ -11,7 +11,9 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.util.*;
 import java.util.Timer;
@@ -35,6 +37,7 @@ public class DeviceFrame extends JFrame {
   private ImageCanvas canvas;
   private JComponent toolBar;
   private AffineTransform scaleTX;
+  private AffineTransform landscapeTX;
   private AffineTransform upsideDownTX;
   private RecordingListener recordingListener;
   private Timer timer;
@@ -181,7 +184,6 @@ public class DeviceFrame extends JFrame {
 
       boolean fresh = canvas.getScreenshot() == null;
       if (image != null) {
-        if (landscapeMode) image.rotate();
         if (recordingListener != null) recordingListener.record(image);
         canvas.setScreenshot(image);
         infoPane.setSizeInfo(canvas);
@@ -214,23 +216,27 @@ public class DeviceFrame extends JFrame {
     protected void paintComponent(Graphics g) {
       if (image != null && g instanceof Graphics2D) {
         Graphics2D g2 = (Graphics2D)g;
-        BufferedImageOp tx = null;
+        AffineTransform TX = new AffineTransform();
+        BufferedImage bufImg = image.toBufferedImage();
 
-        if (scaleTX != null) {
-          tx = new AffineTransformOp(scaleTX, HINTS);
+        if (landscapeMode) {
+          bufImg = toLandscape(bufImg);
         }
 
-        if (upsideDownTX != null) {
-          if (tx == null) {
-            tx = new AffineTransformOp(upsideDownTX, HINTS);
-          } else {
-            AffineTransform SCTX = (AffineTransform)scaleTX.clone();
-            SCTX.concatenate(upsideDownTX);
-            tx = new AffineTransformOp(SCTX, HINTS);
-          }
+        if (scalePercentage != 100) {
+          double scale = scalePercentage / 100.0;
+          TX.concatenate(AffineTransform.getScaleInstance(scale, scale));
         }
 
-        g2.drawImage(image.toBufferedImage(), tx, 0, 0);
+        if (upsideDown) {
+          int w = image.getWidth();
+          int h = image.getHeight();
+          double x = (landscapeMode ? h : w) / 2;
+          double y = (landscapeMode ? w : h) / 2;
+          TX.concatenate(AffineTransform.getQuadrantRotateInstance(2, x, y));
+        }
+
+        g2.drawImage(bufImg, TX, null);
       } else {
         g.setColor(Color.RED);
         g.setFont(getFont().deriveFont(16.0F));
@@ -238,9 +244,30 @@ public class DeviceFrame extends JFrame {
       }
     }
 
+    BufferedImage toLandscape(BufferedImage img) {
+      int q = 3;
+      int w = img.getWidth();
+      int h = img.getHeight();
+
+      Point topLeft = new Point((q == 2 || q == 3) ? w : 0,
+          (q == 1 || q == 2) ? h : 0);
+      Point2D origo = AffineTransform.getQuadrantRotateInstance(q, 0, 0)
+          .transform(topLeft, null);
+      BufferedImage result = new BufferedImage(h, w, img.getType());
+      Graphics2D g = result.createGraphics();
+      g.translate(0 - origo.getX(), 0 - origo.getY());
+      g.transform(AffineTransform.getQuadrantRotateInstance(q, 0, 0));
+      g.drawRenderedImage(img, null);
+
+      return result;
+    }
+
     @Override
     public Dimension getPreferredSize() {
       if (image == null) return new Dimension(200, 300);
+      if (landscapeMode) {
+        return new Dimension(scale(image.getHeight()), scale(image.getWidth()));
+      }
       return new Dimension(scale(image.getWidth()), scale(image.getHeight()));
     }
 
@@ -256,24 +283,10 @@ public class DeviceFrame extends JFrame {
 
   public void setScale(int scalePercentage) {
     this.scalePercentage = scalePercentage;
-    if (scalePercentage == 100) {
-      scaleTX = null;
-    } else {
-      double scale = scalePercentage / 100.0;
-      scaleTX = AffineTransform.getScaleInstance(scale, scale);
-    }
   }
 
   public void setUpsideDown(boolean upsideDown) {
     this.upsideDown = upsideDown;
-    ScreenImage lastScreenshot = getLastScreenshot();
-    if (upsideDown && lastScreenshot != null) {
-      double x = lastScreenshot.getWidth() / 2;
-      double y = lastScreenshot.getHeight() / 2;
-      upsideDownTX = AffineTransform.getQuadrantRotateInstance(2, x, y);
-    } else {
-      upsideDownTX = null;
-    }
   }
 
   public void setRecordingListener(RecordingListener recordingListener) {
