@@ -81,7 +81,6 @@ public class ApplicationFrame extends JFrame {
 
     JScrollPane pane = new JScrollPane(tbl);
     pane.setBorder(BorderFactory.createTitledBorder("Devices"));
-    pane.setMaximumSize(new Dimension(400, 200));
 
     return pane;
   }
