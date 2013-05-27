@@ -92,6 +92,7 @@ public class DeviceTableModel extends AbstractTableModel {
     if (col == SHOW) {
       boolean newValue = (Boolean)value;
       if (!dev.isVisible() && newValue) {
+        dev.pack();
         dev.setVisible(true);
       }
       if (dev.isVisible() && !newValue) {

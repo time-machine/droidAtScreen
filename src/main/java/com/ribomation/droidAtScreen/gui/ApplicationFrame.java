@@ -28,7 +28,7 @@ public class ApplicationFrame extends JFrame {
   private final String[] OPTIONS_MENU = {"PreferredScale", "-", "HideEmulators",
       "SkipEmulator", "AskBeforeQuit", "-", "LookAndFeel", "-",
       "RemoveProperties"};
-  private final String[] HELP_MENU = {"Help", "About"};
+  private final String[] HELP_MENU = {"About"};
 
   public ApplicationFrame(Application app) throws HeadlessException {
     this.app = app;
