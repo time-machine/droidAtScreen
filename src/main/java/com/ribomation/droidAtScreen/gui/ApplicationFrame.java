@@ -9,6 +9,8 @@ import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -19,7 +21,6 @@ import java.awt.event.WindowEvent;
 public class ApplicationFrame extends JFrame {
   private Logger log = Logger.getLogger(ApplicationFrame.class);
   private Application app;
-  private DefaultComboBoxModel deviceListModel = new DefaultComboBoxModel();
   private StatusBar statusBar;
 
   private final String[] TOOLBAR = {"ImageDirectory", "-", "AdbRestart",
@@ -42,10 +43,6 @@ public class ApplicationFrame extends JFrame {
     return statusBar;
   }
 
-  public ComboBoxModel getDeviceList() {
-    return deviceListModel;
-  }
-
   public void initGUI() {
     setIconImage(GuiUtil.loadIcon("device").getImage());
     setTitle(app.getInfo().getName() + ", Version " +
@@ -59,7 +56,7 @@ public class ApplicationFrame extends JFrame {
     });
     setJMenuBar(createMenubar());
     add(GuiUtil.createToolbar(TOOLBAR), BorderLayout.NORTH);
-    add(createDeviceControlPane(), BorderLayout.CENTER);
+    add(createDevicesTable(), BorderLayout.CENTER);
     add(statusBar = new StatusBar(app), BorderLayout.SOUTH);
     pack();
     setLocationByPlatform(true);
@@ -75,35 +72,17 @@ public class ApplicationFrame extends JFrame {
     return mb;
   }
 
-  private JPanel createDeviceControlPane() {
-    JPanel p = new JPanel(new GridLayout(1, 1, 0, 5));
-    p.add(createDevicesList());
-    return p;
-  }
+  private JComponent createDevicesTable() {
+    JTable tbl = new JTable(app.getDeviceTableModel());
+    tbl.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    tbl.setRowSelectionAllowed(true);
+    tbl.setShowHorizontalLines(true);
+    tbl.setFillsViewportHeight(true);
 
-  private JPanel createDevicesList() {
-    JComboBox devices = new JComboBox(deviceListModel);
-    devices.setPreferredSize(new Dimension(200, 20));
+    JScrollPane pane = new JScrollPane(tbl);
+    pane.setBorder(BorderFactory.createTitledBorder("Devices"));
+    pane.setMaximumSize(new Dimension(400, 200));
 
-    app.addAndroidDeviceListener(new AndroidDeviceListener() {
-      @Override
-      public void connected(AndroidDevice dev) {
-        log.debug("[devicesBox] connected: dev = " + dev);
-        deviceListModel.addElement(dev.getName());
-        deviceListModel.setSelectedItem(dev.getName());
-      }
-
-      @Override
-      public void disconnected(AndroidDevice dev) {
-        log.debug("[devicesBox] disconnected: dev = " + dev);
-        deviceListModel.removeElement(dev.getName());
-      }
-    });
-
-    JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    p.setBorder(BorderFactory.createTitledBorder("Devices"));
-    p.add(devices);
-    p.add(Command.get("Show").createButton());
-    return p;
+    return pane;
   }
 }

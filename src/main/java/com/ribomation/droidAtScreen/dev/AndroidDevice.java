@@ -32,6 +32,10 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
         target.getSerialNumber());
   }
 
+  public IDevice getDevice() {
+    return target;
+  }
+
   public ScreenImage getScreenImage() {
     try {
       RawImage rawImage = target.getScreenshot();
@@ -105,16 +109,18 @@ public class AndroidDevice implements Comparable<AndroidDevice> {
     if (!(obj instanceof AndroidDevice)) return false;
 
     AndroidDevice that = (AndroidDevice)obj;
-    return this.getName().equals(that.getName());
+    return this.getDevice().getSerialNumber().equals(
+        that.getDevice().getSerialNumber());
   }
 
   @Override
   public int hashCode() {
-    return this.getName().hashCode();
+    return this.getDevice().getSerialNumber().hashCode();
   }
 
   @Override
   public int compareTo(AndroidDevice that) {
-    return this.getName().compareTo(that.getName());
+    return this.getDevice().getSerialNumber().compareTo(
+        that.getDevice().getSerialNumber());
   }
 }

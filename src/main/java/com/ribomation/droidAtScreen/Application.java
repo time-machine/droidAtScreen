@@ -5,8 +5,10 @@ import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
 import com.ribomation.droidAtScreen.dev.AndroidDeviceManager;
 import com.ribomation.droidAtScreen.gui.ApplicationFrame;
 import com.ribomation.droidAtScreen.gui.DeviceFrame;
+import com.ribomation.droidAtScreen.gui.DeviceTableModel;
 
 import javax.swing.*;
+import javax.swing.table.TableModel;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
@@ -18,14 +20,10 @@ import java.util.prefs.Preferences;
  */
 public interface Application {
   ApplicationFrame getAppFrame();
+  Settings getSettings();
+  Info getInfo();
+  AndroidDeviceManager getDeviceManager();
   void addAndroidDeviceListener(AndroidDeviceListener listener);
-  void setScale(int percentage);
-  void setAutoShow(boolean show);
-  void setSkipEmulator(boolean skip);
-  void setLandscapeMode(boolean portrait);
-  void setUpsideDown(boolean upsideDown);
-  void setFrameRate(int rate);
-  DeviceFrame getSelectedDevice();
   Map<String, DeviceFrame> getDevices();
 
   /**
@@ -40,8 +38,5 @@ public interface Application {
    */
   void disconnected(AndroidDevice dev);
 
-  Settings getSettings();
-
-  AndroidDeviceManager getDeviceManager();
-  Info getInfo();
+  DeviceTableModel getDeviceTableModel();
 }
