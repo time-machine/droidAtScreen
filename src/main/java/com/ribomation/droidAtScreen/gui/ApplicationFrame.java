@@ -25,7 +25,7 @@ public class ApplicationFrame extends JFrame {
       "AskBeforeScreenshot"};
   private final String[] ADB_MENU = {"AdbRestart", "AdbReloadDevices",
       "AdbExePath"};
-  private final String[] OPTIONS_MENU = {"PreferredScale", "-", "AutoShow",
+  private final String[] OPTIONS_MENU = {"PreferredScale", "-", "HideEmulators",
       "SkipEmulator", "AskBeforeQuit", "-", "LookAndFeel", "-",
       "RemoveProperties"};
   private final String[] HELP_MENU = {"Help", "About"};
