@@ -10,8 +10,7 @@ import com.ribomation.droidAtScreen.gui.DeviceTableModel;
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.io.File;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.prefs.Preferences;
 
 /**
@@ -24,7 +23,7 @@ public interface Application {
   Info getInfo();
   AndroidDeviceManager getDeviceManager();
   void addAndroidDeviceListener(AndroidDeviceListener listener);
-  Map<String, DeviceFrame> getDevices();
+  List<DeviceFrame> getDevices();
 
   /**
    * Invoked when a new device is detected.
@@ -39,4 +38,6 @@ public interface Application {
   void disconnected(AndroidDevice dev);
 
   DeviceTableModel getDeviceTableModel();
+  void disconnectAll();
+  java.util.Timer getTimer();
 }

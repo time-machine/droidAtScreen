@@ -16,8 +16,7 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
+import java.util.Timer;
 
 /**
  * Main entry point of this application
@@ -31,8 +30,8 @@ public class DroidAtScreenApplication implements Application,
       new ArrayList<AndroidDeviceListener>();
   private Settings settings;
   private Properties appProperties;
-  private Map<String, DeviceFrame> devices = new HashMap<String, DeviceFrame>();
   private DeviceTableModel deviceTableModel = new DeviceTableModel();
+  private Timer timer;
 
   public static void main(String[] args) {
     DroidAtScreenApplication app = new DroidAtScreenApplication();
@@ -80,6 +79,7 @@ public class DroidAtScreenApplication implements Application,
     log.debug("initAndroid");
     deviceManager = new AndroidDeviceManager(this);
     deviceManager.initManager();
+    timer = new Timer("Screenshot Retrievers");
   }
 
   private void run() {
@@ -128,8 +128,8 @@ public class DroidAtScreenApplication implements Application,
   // App getters
   // --------------------------------------------
   @Override
-  public Map<String, DeviceFrame> getDevices() {
-    return devices;
+  public List<DeviceFrame> getDevices() {
+    return getDeviceTableModel().getDevices();
   }
 
   @Override
@@ -175,6 +175,11 @@ public class DroidAtScreenApplication implements Application,
     return deviceTableModel;
   }
 
+  @Override
+  public Timer getTimer() {
+    return timer;
+  }
+
   // --------------------------------------------
   // AndroidDeviceManager
   // --------------------------------------------
@@ -185,7 +190,6 @@ public class DroidAtScreenApplication implements Application,
       @Override
       public void run() {
         DeviceFrame frame = new DeviceFrame(DroidAtScreenApplication.this, dev);
-        devices.put(frame.getName(), frame);
         deviceTableModel.add(frame);
         fireDeviceConnected(dev);
 
@@ -203,15 +207,25 @@ public class DroidAtScreenApplication implements Application,
       public void run() {
         getAppFrame().getStatusBar().message("Disconnected from " +
             dev.getName());
-        DeviceFrame frame = devices.remove(dev.getName());
+        DeviceFrame frame = deviceTableModel.getDevice(dev.getName());
+        if (frame == null) return;
+
         deviceTableModel.remove(frame);
         fireDeviceDisconnected(dev);
 
-        if (frame == null) return;
+        frame.stopRetriever();
         frame.setVisible(false);
         frame.dispose();
       }
     });
+  }
+
+  @Override
+  public void disconnectAll() {
+    for (DeviceFrame frame : new ArrayList<DeviceFrame>(
+        deviceTableModel.getDevices())) {
+      disconnected(frame.getDevice());
+    }
   }
 
   @Override

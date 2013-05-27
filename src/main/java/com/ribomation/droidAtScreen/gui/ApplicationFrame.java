@@ -3,14 +3,9 @@ package com.ribomation.droidAtScreen.gui;
 import com.ribomation.droidAtScreen.Application;
 import com.ribomation.droidAtScreen.cmd.Command;
 import com.ribomation.droidAtScreen.cmd.QuitCommand;
-import com.ribomation.droidAtScreen.dev.AndroidDevice;
-import com.ribomation.droidAtScreen.dev.AndroidDeviceListener;
-import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
