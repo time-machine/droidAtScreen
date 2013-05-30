@@ -87,7 +87,37 @@ public class PropertiesCommand extends CommandWithTarget<DeviceFrame> {
     @Override
     public Object getValueAt(int row, int col) {
       if (col == 0) return names.get(row);
+      if (col == 1) return values.get(row);
+      return null;
+    }
 
+    @Override
+    public String getColumnName(int col) {
+      if (col == 0) return "Name";
+      if (col == 1) return "Value";
+      return "";
+    }
+
+    @Override
+    public int getRowCount() {
+      return names.size();
+    }
+
+    @Override
+    public int getColumnCount() {
+      return 2;
+    }
+
+    @Override
+    public boolean isCellEditable(int row, int col) {
+      return false;
+    }
+
+    @Override
+    public Class<?> getColumnClass(int col) {
+      if (col == 0) return String.class;
+      if (col == 1) return String.class;
+      return Object.class;
     }
   }
 }
