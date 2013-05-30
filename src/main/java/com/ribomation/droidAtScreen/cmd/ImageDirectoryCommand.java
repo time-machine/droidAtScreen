@@ -12,6 +12,7 @@ public class ImageDirectoryCommand extends Command {
   public ImageDirectoryCommand() {
     setLabel("Image Dir");
     setIcon("imgfolder");
+    setMnemonic('D');
     updateView(getApplication().getSettings().getImageDirectory());
   }
 

@@ -15,6 +15,7 @@ public class PreferredScaleCommand extends Command {
   protected PreferredScaleCommand() {
     updateButton(getApplication().getSettings().getPreferredScale());
     setIcon("scale");
+    setMnemonic('S');
     setTooltip("Set the preferred scale of new devices");
   }
 

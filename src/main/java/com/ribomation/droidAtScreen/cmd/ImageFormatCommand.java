@@ -11,6 +11,7 @@ public class ImageFormatCommand extends Command {
   public ImageFormatCommand() {
     updateView(getApplication().getSettings().getImageFormat());
     setIcon("imgfmt");
+    setMnemonic('F');
     setTooltip("Set the default image-format when saving screen-shots.");
   }
 

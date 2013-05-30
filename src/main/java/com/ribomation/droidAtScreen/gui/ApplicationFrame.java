@@ -19,7 +19,7 @@ public class ApplicationFrame extends JFrame {
   private StatusBar statusBar;
 
   private final String[] TOOLBAR = {"ImageDirectory", "-", "AdbRestart",
-      "AdbReloadDevices", "-", "About"};
+      "AdbReloadDevices", "-", "About", "-", "Quit"};
   private final String[] FILE_MENU = {"Quit"};
   private final String[] IMAGE_MENU = {"ImageDirectory", "ImageFormat",
       "AskBeforeScreenshot"};
@@ -73,6 +73,7 @@ public class ApplicationFrame extends JFrame {
     tbl.setRowSelectionAllowed(true);
     tbl.setShowHorizontalLines(true);
     tbl.setFillsViewportHeight(true);
+    tbl.setPreferredScrollableViewportSize(new Dimension(450, 150));
 
     JScrollPane pane = new JScrollPane(tbl);
     pane.setBorder(BorderFactory.createTitledBorder("Devices"));

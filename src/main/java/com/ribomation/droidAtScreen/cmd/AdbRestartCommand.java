@@ -12,6 +12,7 @@ public class AdbRestartCommand extends Command {
   public AdbRestartCommand() {
     setLabel("Restart ADB");
     setIcon("sync");
+    setMnemonic('R');
     setTooltip("Tries to restart the ADB server. Unplug your device(s) first.");
   }
 
