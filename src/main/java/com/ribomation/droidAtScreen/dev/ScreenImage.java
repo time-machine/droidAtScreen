@@ -53,7 +53,7 @@ public class ScreenImage {
     copy.rawImage.green_length = this.rawImage.green_length;
     copy.rawImage.alpha_offset = this.rawImage.alpha_offset;
     copy.rawImage.alpha_length = this.rawImage.alpha_length;
-    copy.rawImage.data = this.rawImage.data;
+    copy.rawImage.data = new byte[this.rawImage.data.length];
     System.arraycopy(this.rawImage.data, 0, copy.rawImage.data, 0,
         this.rawImage.data.length);
     return copy;
@@ -70,6 +70,6 @@ public class ScreenImage {
   }
 
   public int getHeight() {
-    return rawImage.width;
+    return rawImage.height;
   }
 }
