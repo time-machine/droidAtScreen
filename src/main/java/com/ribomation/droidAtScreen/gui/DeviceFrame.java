@@ -58,7 +58,7 @@ public class DeviceFrame extends JFrame implements Comparable<DeviceFrame> {
     add(infoPane = new InfoPane(), BorderLayout.SOUTH);
 
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-    addWindowStateListener(new WindowAdapter() {
+    addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
         log.debug("windowClosing");
