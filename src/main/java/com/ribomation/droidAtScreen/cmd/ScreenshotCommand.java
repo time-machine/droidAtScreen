@@ -90,7 +90,7 @@ public class ScreenshotCommand extends CommandWithTarget<DeviceFrame> {
 
   private boolean askOverwrite(Application app, File f) {
     return JOptionPane.showConfirmDialog(app.getAppFrame(), String.format(
-        "File '%s' already exist. Do you want to overwrite it?", f),
+        "File '%s' already exists. Do you want to overwrite it?", f),
         "Overwrite?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
   }
 
