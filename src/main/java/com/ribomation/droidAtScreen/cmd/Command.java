@@ -125,7 +125,7 @@ public abstract class Command extends AbstractAction implements
   }
 
   public JMenuItem createMenuItem() {
-    JMenuItem mi = new JMenuItem();
+    JMenuItem mi = newMenuItem();
     mi.setAction(this);
     return mi;
   }
