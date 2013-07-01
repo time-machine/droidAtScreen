@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class RecordingCommand extends CommandWithTarget<DeviceFrame> implements
     RecordingListener, Runnable {
+  private static final int MAXIMUM_FILES = 10;
+
   private AtomicInteger next = new AtomicInteger(0);
   private AtomicBoolean capturing = new AtomicBoolean(true);
   private BlockingQueue<ScreenImage> images;
@@ -112,6 +114,10 @@ public class RecordingCommand extends CommandWithTarget<DeviceFrame> implements
   }
 
   File nextName() {
+    if (next.get() >= MAXIMUM_FILES) {
+      next.set(0);
+    }
+
     return new File(dir, String.format("droidAtScreen-%d.%s",
         next.incrementAndGet(), format));
   }
